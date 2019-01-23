@@ -34,7 +34,7 @@ if __name__=='__main__':
         necessary_inputs.add_argument('--target', dest='tar_cat', type=str, default=None, help='Target catalogue filename or path')
         necessary_inputs.add_argument('--reference', dest='ref_cat', type=str, default=None, help='Reference catalogue filename or path')
         necessary_inputs.add_argument('--freq', dest='tar_freq', type=float, default=None, help='Frequency of target catalogue on MHz')
-        neccessary_inputs.add_argument('--refsurvey', dest='ref_survey_name', type=str, default=None, help="Name of survey used as reference catalog, current support for 'GLEAM' and 'TGSS'. If using a different survey, Complete supplied template file 'reference_catalogue_format.txt' and call it here.")
+        necessary_inputs.add_argument('--refsurvey', dest='ref_survey_name', type=str, default=None, help="Name of survey used as reference catalog, current support for 'GLEAM' and 'TGSS'. If using a different survey, Complete supplied template file 'reference_catalogue_format.txt' and call it here.")
 
         settings=parser.add_argument_group('Settings')
         settings.add_argument('--norestrict', dest='snr_init_restrict',action="store_false", default=True, help='Turn off initial restriction that matches only sources above a set SNR for the first run through')
