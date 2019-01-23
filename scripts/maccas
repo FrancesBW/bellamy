@@ -45,7 +45,7 @@ if __name__=='__main':
         settings.add_argument('--debug', dest='debug',action="store_true", default=False, help="Turn on debugging [Default=False]")
 
         optional_inputs=parser.add_argument_group('Optional inputs')
-        optional_inputs.add_argument('--outformat' dest='output_format', type=str, default='fits', help='File format for table outputs, can be any format supported by astropy.table.Table object writing tool [Default=fits]')
+        optional_inputs.add_argument('--outformat' dest='output_format', type=str, default="fits", help="File format for table outputs, can be any format supported by astropy.table.Table object writing tool [Default=fits]")
         optional_inputs.add_argument('--singlepercentile', dest='single_match_percentile', type=float, default=0.95, help='Percentile above which single matches are accepted as true matches [Default=0.95]')
         optional_inputs.add_argument('--multipercentile', dest='multiple_match_percentile', type=float, default=0.6, help='Normalised percentile above which one of multiple  matches is accepted as true matches [Default=0.6]')
         optional_inputs.add_argument('--snr', dest='snr_restriction', type=float, default=10., help='SNR threshold required for sources to be matched in the first run [Default=10]')
