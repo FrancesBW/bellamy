@@ -27,6 +27,7 @@ import main_program
 warnings.filterwarnings("ignore", category=UserWarning) 
 
 print("os.getcwd: "+os.getcwd())
+print("os.ctermid: "+os.ctermid())
 
 if __name__=='__main__':
         
