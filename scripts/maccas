@@ -1,0 +1,318 @@
+#! /usr/bin/env python
+from __future__ import print_function
+import numpy as np
+import os
+#import textwrap
+from scipy import interpolate
+from scipy.interpolate import CloughTocher2DInterpolator
+import astropy
+from astropy import wcs
+from astropy.io import fits
+from astropy.io.votable import parse_single_table
+from astropy.coordinates import SkyCoord, Angle, Latitude, Longitude, SkyOffsetFrame
+from astropy.table import Table, hstack, join, vstack
+import astropy.units as u
+import sys
+import glob
+import argparse
+#import psutil
+import matplotlib.pyplot as plt
+from matplotlib import gridspec
+from copy import copy
+import warnings
+import logging
+import logging.config
+import main_program
+
+warnings.filterwarnings("ignore", category=UserWarning) 
+
+if __name__=='__main':
+        
+        parser=argparse.ArgumentParser(prog='maccas',prefix_chars='-')
+        
+        necessary_inputs=parser.add_argument_group('Required inputs')
+        necessary_inputs.add_argument('--target', dest='tar_cat', type=str, default=None, help='Target catalogue filename or path')
+        necessary_inputs.add_argument('--reference', dest='ref_cat', type=str, default=None, help='Reference catalogue filename or path')
+        necessary_inputs.add_argument('--freq', dest='tar_freq', type=float, default=None, help='Frequency of target catalogue on MHz')
+        neccessary_inputs.add_argument('--refsurvey', dest='ref_survey_name', type=str, default=None, help="Name of survey used as reference catalog, current support for 'GLEAM' and 'TGSS'. If using a different survey, Complete supplied template file 'reference_catalogue_format.txt' and call it here.")
+
+        settings=parser.add_argument_group('Settings')
+        settings.add_argument('--norestrict', dest='snr_init_restrict',action="store_false", default=True, help='Turn off initial restriction that matches only sources above a set SNR for the first run through')
+        settings.add_argument('--overwrite', dest='output_overwrite', action="store_true", default=False,help='Overwrite files with same names as outputs, see documentation for these names')
+        settings.add_argument('--nofluxmodel', dest='model_flux', action="store_false", default=True, help='Turn off large scale flux correction model. This is recommended only if target catalogue fluxes have been accurately calibrated')
+        settings.add_argument('--warpplot', dest='plotting', action="store_true", default=False, help='Output the measured and modelled offsets from each iteration as and flux model (if turned on) as png files.')
+        settings.add_argument('--nofluxmatch', dest='flux_match', action="store_false", default=True, help='Only assess match probability on physical proximity on sky. Note that this amounts to a nearest neighbour match with dewarping.')
+        settings.add_argument('--debug', dest='debug',action="store_true", default=False, help="Turn on debugging [Default=False]")
+
+        optional_inputs=parser.add_argument_group('Optional inputs')
+        optional_inputs.add_argument('--outformat' dest='output_format', type=str, default='fits', help='File format for table outputs, can be any format supported by astropy.table.Table object writing tool [Default=fits]')
+        optional_inputs.add_argument('--singlepercentile', dest='single_match_percentile', type=float, default=0.95, help='Percentile above which single matches are accepted as true matches [Default=0.95]')
+        optional_inputs.add_argument('--multipercentile', dest='multiple_match_percentile', type=float, default=0.6, help='Normalised percentile above which one of multiple  matches is accepted as true matches [Default=0.6]')
+        optional_inputs.add_argument('--snr', dest='snr_restriction', type=float, default=10., help='SNR threshold required for sources to be matched in the first run [Default=10]')
+        optional_inputs.add_argument('--modeldeg', dest='flux_model_deg', type=int, default=1, help='Degree of 2D polynomial used to model large scale flux correction (only integers between 1 and 5 inclusive) [Default=1]')
+        optional_inputs.add_argument('--tarformat', dest='tar_table_formatting_file', type=str, default=None, help="File to translate column names from supplied target catalogue into useable form for algrotihm. Complete supplied template file 'target_catalogue_format.txt' and call it here [Default=None]")
+        optional_inputs.add_argument('--filesuffix', dest='save_file_suffix', type=str, default=None, help="Suffix appended to all file names from impending run, provided as an alternative to renaming previous run files or overwriting them [Default=None]")
+               
+        
+        options = parser.parse_args()
+
+        #set up logging
+        FORMAT = '%(asctime)-15s Witty Acronym  %(message)s'
+        logging.basicConfig(format=FORMAT)
+        log=logging.getLogger("Witty Acronym")
+        logging_level = logging.DEBUG if options.debug else logging.INFO
+        log.setLevel(logging_level)
+        
+
+        #provides the user with help dialogue about the program
+        if len(sys.argv) <= 1:
+                parser.print_help()
+                sys.exit(0)
+
+        #checks the user has provided a target catalog. If not, raise a fatal error.
+        if options.tar_cat!=None:
+                if os.path.exists(options.tar_cat):
+                        target_cat_filename=options.tar_cat
+                        log.info("Target catalogue: {0}".format(target_cat_filename.split('/')[-1]))
+                else:
+                        log.error("{0} not found.".format(options.tar_cat))
+                        sys.exit(1)
+        else:
+                log.error("No target catalogue supplied. Use argument '--target filename' to supply target catalog")
+                sys.exit(1)
+
+        #checks the user has provided a reference catalog. If not, raise a fatal error.
+        if options.ref_cat!=None:
+                if os.path.exists(options.ref_cat):
+                        reference_cat_filename=options.ref_cat
+                        log.info("Reference catalogue: {0}".format(reference_cat_filename.split('/')[-1]))
+                else:
+                        log.error("{0} not found.".format(options.ref_cat))
+                        sys.exit(1)
+        else:
+                log.error("No reference catalogue supplied. Use argument '--reference filename' to supply target catalog")
+                sys.exit(1)
+
+        #checks the user has specified reference survey table format. If not, raise a fatal error
+        if options.ref_survey_name!=None:
+                if options.ref_survey_name.split('.')[-1]=='txt':
+                        ref_format_filename=options.ref_survey_name
+                        log.info("Reference catalogue format used: {0}".format(ref_format_filename.split('/')[-1]))
+                else:
+                        ref_format_filename=options.ref_survey_name+'.txt'
+                        log.info("Reference catalogue format used: {0}".format(options.ref_survey_name))
+        else:
+                log.error("No reference catalogue table format supplied. Please choose from 'GLEAM', 'TGSS' or specify file name for alternate table format.")
+                sys.exit(1)
+
+        #read in the reference survey file format
+        ref_required_format=['RA_name','DEC_name','RA_error_name','DEC_error_name','PSF_semimajor_axis_name','PSF_semiminor_axis_name','source_semimajor_axis_name','source_semiminor_axis_name','peak_flux_name','peak_flux_error_name','integrated_flux_name','local_rms_name','unique_identifier_name','frequency','frequency_prefix_or_suffix']
+        with open(ref_format_filename) as f:
+                inputs = [line.rstrip('\n') for line in f][:15]
+        ref_values=[line.split('=')[1] for line in inputs]
+        if [line.split('=')[0] for line in inputs]==ref_required_format:
+                g_ref_ra, g_ref_dec, g_ref_err_ra, g_ref_err_dec, g_ref_psf_a, g_ref_psf_b, g_ref_a, g_ref_b, g_ref_peak_flux, g_ref_err_peak_flux, g_ref_int_flux,g_ref_local_rms, g_ref_uuid=ref_values[:13]
+                if '-' in values[13]:
+                        g_ref_min_freq=ref_values[13].split('-')[0]
+                        #g_ref_min_freq=min(np.array(ref_values[13].split('-'),dtype=np.float))
+                        g_ref_max_freq=ref_values[13].split('-')[1]
+                        #g_ref_max_freq=max(np.array(ref_values[13].split('-'),dtype=np.float))
+                        g_ref_p_or_s=ref_values[14]
+                        g_num_freq='multiple'
+                else:
+                        g_ref_freq=ref_values[13]
+                        g_ref_p_or_s=ref_values[14]
+                        g_num_freq='single'
+        else:
+                writing_format=[]
+                for i in range(0,15):
+                        writing_format.append(ref_required_format[i]+'=\n')
+                with open(install_location+'reference_catalogue_format.txt', 'w') as f: 
+                        f.writelines(writing_format)
+
+        #checks if the user has specified a target catalogue table format. If not go to default
+        if options.tar_table_formatting_file!=None:
+                tar_format_filename=options.tar_table_formatting_file
+                log.info("Target catalogue format used: {0}".format(tar_format_filename.split('/')[-1]))
+        else:
+                tar_format_filename='target_format_default.txt'
+                log.info("Default target catalogue format used")
+
+        #read in the target survey file format
+        tar_required_format=['RA_name','DEC_name','RA_error_name','DEC_error_name','PSF_semimajor_axis_name','PSF_semiminor_axis_name','source_semimajor_axis_name','source_semiminor_axis_name','peak_flux_name','peak_flux_error_name','integrated_flux_name','local_rms_name','unique_identifier_name']
+        with open(tar_format_filename) as f:
+                inputs = [line.rstrip('\n') for line in f][:13]
+        tar_values=[line.split('=')[1] for line in inputs]
+        if [line.split('=')[0] for line in inputs]==tar_required_format:
+                g_tar_ra, g_tar_dec, g_tar_err_ra, g_tar_err_dec, g_tar_psf_a, g_tar_psf_b, g_tar_a, g_tar_b, g_tar_peak_flux, g_tar_err_peak_flux, g_tar_int_flux, g_tar_local_rms, g_tar_uuid=tar_values
+        else:
+                writing_format=[]
+                for i in range(0,13):
+                        writing_format.append(required_format[i]+'=\n')
+                with open(install_location+'reference_catalogue_format.txt', 'w') as f: 
+                        f.writelines(writing_format)
+
+        #apply all the run settings
+        if options.snr_init_restrict:
+                snr_restrict=options.snr_restriction
+                log.info("Initial signal-to-noise ratio restriction: {0}".format(snr_restrict))
+        else:
+                snr_restrict=options.snr_init_restrict
+                log.info("Initial signal-to-noise ratio restriction: Off")
+        g_overwrite=options.output_overwrite
+        if options.output_overwrite:
+                log.info("Overwrite exisiting output files: On")
+        else:
+                log.info("Overwrite exisiting output files: Off")
+        if options.model_flux:
+                log.info("Flux modelling: On")
+                log.info("2D flux model degree: {0}".format(options.flux_model_deg))
+                g_flux_model_deg=options.flux_model_deg
+        else:
+                log.info("Flux modelling: Off")
+        g_plot=options.plotting
+        if options.plotting:
+                log.info("Plotting measured and modelled offsets: On")
+        else:
+                log.info("Plotting measured and modelled offsets: Off")
+        g_flux_match=options.flux_match
+        if options.flux_match:
+                log.info("Flux match: On")
+                #checks the user has provided a frequency for the target catalogue. If flux matching is on and the target frequency is not the same as the reference frequency, then warnings an fatal errors shoudl be raised. If flux matching is off, this condition can be completely ignored. 
+                if options.tar_freq!=None:
+                        target_frequency=float(options.tar_freq)
+                        log.info("Target catalogue frequency: {0} MHz".format(target_frequency))
+                        if g_num_freq=='multiple':                        
+                                if target_frequency<float(g_ref_max_freq) and target_frequency>float(g_ref_min_freq):
+                                        log.info("Target catalogue frequency falls in reference catalog range, if no data exists in reference catalog for target catalog frequency exactly, then interpolation will be used.")
+                                elif target_frequency>float(g_ref_max_freq) or target_frequency<float(g_ref_min_freq):
+                                        log.warning("Target catalogue frequency falls outside reference catalog range. Extrapolation will be used, however results may be wildly inaccurate. Consider using a different catalogue that covers the target catalogue frequency or turning flux matching off, to match only on position (using --nofluxmatch).")
+                                else:
+                                        log.error("Unknown target frequency: {0}".format(target_frequency))
+                                        sys.exit(1)
+                        else:
+                                if target_frequency!=float(g_ref_freq):
+                                        log.warning("Target and reference catalogue frequency either do not match, or have not been specified. This algorthm will continue on the assumption that they do match or are close enough for comparison. If this is not the case, results may be wildly inaccurate. Consider using a different catalogue that covers the target catalogue frequency or turning flux matching off, to match only on position (using --nofluxmatch).") 
+                else:
+                        if g_num_freq=='multiple':
+                                log.error("No target catalogue fequency supplied for comparison with a multiple frequency reference catalog. Please specify a target catalogue frequency using --freq")
+                                sys.exit(1)
+                        else:
+                                log.warning("Target and reference catalogue frequency either do not match, or have not been specified. This algorthm will continue on the assumption that they do match or are close enough for comparison. If this is not the case, results may be wildly inaccurate. Consider using a different catalogue that covers the target catalogue frequency or turning flux matching off, to match only on position (using --nofluxmatch).")
+        else:
+                log.info("Flux match: Off")
+        g_output_format=options.output_format
+        log.info("Output format: {0}".format(options.output_format))
+        g_single_match_percentile=options.single_match_percentile
+        log.info("Single match confidence percentile: {0}".format(g_single_match_percentile))
+        g_mulitple_match_percentile=options.multiple_match_percentile
+        log.info("Multiple match confidence percentile: {0}".format(g_mulitple_match_percentile))
+        g_save_file_suffix=options.save_file_suffix
+        if g_save_file_suffix==None:
+                g_save_file_suffix=''
+                log.info("No file suffix supplied")
+        else:
+                g_save_file_suffix='_'+g_save_file_suffix
+                log.info("File suffix: {0}".format(g_save_file_suffix))
+
+        #we're going to quickly double check if the filenames already exist in our directory
+        filenames=['leftover_reference_catalogue'+g_file_suffix+'.'+output_format,'leftover_target_catalogue'+g_file_suffix+'.'+output_format,'leftover_unwarped_target_catalogue'+g_file_suffix+'.'+output_format,'cross_matched_table'+g_file_suffix+'.'+output_format,"Modelled_offsets" +g_file_suffix+"_run_","Measured_offsets" +g_file_suffix+"_run_"]
+        for i in range(0,4):
+                if os.path.exists(filenames[i])==False:
+                        log.error("{0} already exists".format(filenames[i]))
+        for i in range(4,6):
+                if glob.glob(filenames[i]+'*.png')>0:
+                        log.error("Files beginning with {0} already exist".format(filenames[i]))
+
+
+        #We're now going to read in the catalogs, and check that the supplied column names exist in the table
+        #Currently only fits support, but will aim to have support for other formats in future revisions
+        raw_reference_table=np.squeeze(fits.open(reference_cat_filename)[1].data)
+        raw_target_table=np.squeeze(fits.open(target_cat_filename)[1].data)
+        
+        target_table_length=len(raw_target_table)
+        reference_table_length=len(raw_reference_table)
+        
+        #target catalog checking 
+        for item in tar_values[:2]:
+                try:
+                        test=raw_target_table[item]
+                except KeyError:
+                        log.error("Could not find column '{0}' in '{1}'. Please edit reference catalogue format file to reflect target catalogue column names and call with '--tarformat filename'".format(item, target_cat_filename))
+                        sys.exit(1)
+        g_tar_ra_data=raw_target_table[tar_values[0]]
+        g_tar_dec_data=raw_target_table[tar_values[1]]
+        g_tar_err_ra_data=check_column_exists(tar_values[2],raw_target_table,optional=True,length=target_table_length,variable='target error RA',error=True)
+        g_tar_err_dec_data=check_column_exists(tar_values[3],raw_target_table,optional=True,length=target_table_length,variable='target error DEC',error=True)
+        g_tar_psf_a_data=check_column_exists(tar_values[4],raw_target_table,optional=True,length=target_table_length,variable='target psf a')
+        g_tar_psf_b_data=check_column_exists(tar_values[5],raw_target_table,optional=True,length=target_table_length,variable='target psf b')
+        g_tar_a_data=check_column_exists(tar_values[6],raw_target_table,optional=True,length=target_table_length,variable='target a')
+        g_tar_b_data=check_column_exists(ref_values[7],raw_target_table,optional=True,length=target_table_length,variable='target b')
+        g_tar_peak_flux_data=check_column_exists(ref_values[8],raw_target_table)
+        g_tar_err_peak_flux_data=check_column_exists(tar_values[9],raw_target_table,optional=True,length=target_table_length,variable='target error peak flux',error=True)
+        g_tar_int_flux_data=check_column_exists(tar_values[10],raw_target_table,optional=True,length=target_table_length,variable='target integrated/total flux')
+        g_tar_local_rms_data=check_column_exists(tar_values[11],raw_target_table,optional=True,length=target_table_length,variable='target local rms')
+        g_tar_uuid_data=check_column_exists(tar_values[12],raw_target_table)
+                        
+        supported_catalogues=['GLEAM','TGSS']
+        #reference catalog has the possibility of single or multiple frequency, need to check the column names exist in each type of reference catalog
+        if options.ref_survey_name=='GLEAM':
+                GLEAM_freq=['076', '084', '092', '099', '107', '115', '122', '130', '143', '151', '158', '166', '174', '181', '189', '197', '204', '212', '220', '227']
+                if options.tar_freq in np.array(GLEAM_freq, dtype=float):
+                        g_ref_freq=GLEAM_freq[np.where(np.array(GLEAM_freq, dtype=float)==options.tar_freq)]
+                else:
+                        above_tar_freq=GLEAM_freq[np.where(np.array(GLEAM_freq, dtype=float)>options.tar_freq)]
+                        below_tar_freq=GLEAM_freq[np.where(np.array(GLEAM_freq, dtype=float)<options.tar_freq)]
+                        if len(above_tar_freq)==0:
+                                g_ref_max_freq=GLEAM_freq[-1]
+                                g_ref_min_freq=GLEAM_freq[-2]
+                        elif len(below_tar_freq)==0:
+                                g_ref_max_freq=GLEAM_freq[1]
+                                g_ref_max_freq=GLEAM_freq[0]
+                        else:
+                                g_ref_max_freq=above_tar_freq[0]
+                                g_ref_min_freq=below_tar_freq[-1]
+                
+        for item in ref_values[:2]:
+                try:
+                        test=raw_reference_table[item]
+                except KeyError:
+                        log.error("Could not find column '{0}' in '{1}'. Please edit reference catalogue format file to reflect reference catalogue column names and call with '--refsurvey filename'".format(item, reference_cat_filename))
+                        sys.exit(1)
+        g_ref_ra_data=raw_reference_table[ref_values[0]]
+        g_ref_dec_data=raw_reference_table[ref_values[1]]
+        g_ref_err_ra_data=check_column_exists(ref_values[2],raw_reference_table,optional=True,length=reference_table_length,variable='reference error RA',error=True)
+        g_ref_err_dec_data=check_column_exists(ref_values[3],raw_reference_table,optional=True,length=reference_table_length,variable='reference error DEC',error=True)
+        #at least one of the four columns from either catalogue needs to have data for the program to proceed, so we must force this last one to have data
+        if np.sum([g_tar_err_ra_data,g_tar_err_dec_data,g_tar_psf_a_data,g_tar_psf_b_data,g_ref_err_ra_data,g_ref_err_dec_data])==0:
+                g_ref_psf_a_data=check_column_exists(ref_values[4],raw_reference_table)
+                g_ref_psf_b_data=check_column_exists(ref_values[5],raw_reference_table)
+        else:
+                g_ref_psf_a_data=check_column_exists(ref_values[4],raw_reference_table,optional=True,length=reference_table_length,variable='reference psf a')
+                g_ref_psf_b_data=check_column_exists(ref_values[5],raw_reference_table,optional=True,length=reference_table_length,variable='reference psf b')
+        g_ref_a_data=check_column_exists(ref_values[6],raw_reference_table,optional=True,length=reference_table_length,variable='reference a')
+        g_ref_b_data=check_column_exists(ref_values[7],raw_reference_table,optional=True,length=reference_table_length,variable='reference b')
+        g_ref_peak_flux_data=check_column_exists(ref_values[8],raw_reference_table)
+        g_ref_err_peak_flux_data=check_column_exists(ref_values[9],raw_reference_table,optional=True,length=reference_table_length,variable='reference error peak flux',error=True)
+        g_ref_int_flux_data=check_column_exists(ref_values[10],raw_reference_table,optional=True,length=reference_table_length,variable='reference integrated/total flux')
+        #again, if the other columns have no data, this one must, so it cannot be optional
+        if np.sum([g_tar_err_peak_flux_data,g_tar_local_rms_data,g_ref_err_peak_flux_data])==0:
+                g_ref_local_rms_data=check_column_exists(ref_values[11],raw_reference_table)
+        else:
+                g_ref_local_rms_data=check_column_exists(ref_values[11],raw_reference_table,optional=True,length=reference_table_length,variable='reference local rms')
+        g_ref_uuid_data=check_column_exists(ref_values[12],raw_reference_table)
+        
+        #Finally we want to create Table objects for the reference and target catalogues for the other modules to easily use and reference
+        raw_target_catalog=Table([g_tar_ra_data,g_tar_dec_data,g_tar_err_ra_data,g_tar_err_dec_data,g_tar_psf_a_data,g_tar_psf_b_data,g_tar_a_data,g_tar_b_data,g_tar_peak_flux_data,g_tar_err_peak_flux_data,g_tar_int_flux_data,g_tar_local_rms_data,g_tar_uuid_data],names=('ra','dec','err_ra','err_dec','psf_a','psf_b','a','b','peak_flux','err_peak_flux','int_flux','local_rms','uuid')]
+        raw_reference_catalog=Table([g_ref_ra_data,g_ref_dec_data,g_ref_err_ra_data,g_ref_err_dec_data,g_ref_psf_a_data,g_ref_psf_b_data,g_ref_a_data,g_ref_b_data,g_ref_peak_flux_data,g_ref_err_peak_flux_data,g_ref_int_flux_data,g_ref_local_rms_data,g_ref_uuid_data],names=('ra','dec','err_ra','err_dec','psf_a','psf_b','a','b','peak_flux','err_peak_flux','int_flux','local_rms','uuid')]
+                
+                
+        
+        
+        
+
+        
+
+        
+        
+

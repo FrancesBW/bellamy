@@ -1,0 +1,15 @@
+RA_name=
+DEC_name=
+RA_error_name=
+DEC_error_name=
+PSF_semimajor_axis_name=
+PSF_semiminor_axis_name=
+source_semimajor_axis_name=
+source_semiminor_axis_name=
+peak_flux_name=
+peak_flux_error_name=
+integrated_flux_name=
+local_rms_name=
+unique_identifier_name=
+frequency=
+frequency_prefix_or_suffix=

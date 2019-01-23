@@ -1,0 +1,10 @@
+*.pyc
+.project
+*.bak
+*.vot
+*.reg
+*.fits
+.idea
+.cache
+.eggs
+

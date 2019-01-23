@@ -1,0 +1,15 @@
+RA_name=RAJ2000
+DEC_name=DEJ2000
+RA_error_name=err_RAJ2000
+DEC_error_name=err_DEJ2000
+PSF_semimajor_axis_name=psf_a
+PSF_semiminor_axis_name=psf_a
+source_semimajor_axis_name=a
+source_semiminor_axis_name=b
+peak_flux_name=peak_flux
+peak_flux_error_name=err_peak_flux
+integrated_flux_name=int_flux
+local_rms_name=local_rms
+unique_identifier_name=Name
+frequency=76-227
+frequency_prefix_or_suffix=suffix
