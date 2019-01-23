@@ -17,6 +17,6 @@ setup(
     long_description=['README.md'],
     packages=[],
     install_requires=reqs,
-    scripts=['main_program.py'],
+    scripts=['scripts/maccas'],
     classifiers=['Programming Language :: Python :: 2.7']
 )
