@@ -26,6 +26,8 @@ import main_program
 
 warnings.filterwarnings("ignore", category=UserWarning) 
 
+print("os.getcwd: "+os.getcwd())
+
 if __name__=='__main__':
         
         parser=argparse.ArgumentParser(prog='maccas',prefix_chars='-')
