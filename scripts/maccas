@@ -57,9 +57,9 @@ if __name__=='__main__':
         options = parser.parse_args()
 
         #set up logging
-        FORMAT = '%(asctime)-15s Witty Acronym  %(message)s'
+        FORMAT = '%(asctime)-10s MACCAS  %(message)s'
         logging.basicConfig(format=FORMAT)
-        log=logging.getLogger("Witty Acronym")
+        log=logging.getLogger("MACCAS")
         logging_level = logging.DEBUG if options.debug else logging.INFO
         log.setLevel(logging_level)
         
@@ -99,7 +99,7 @@ if __name__=='__main__':
                         ref_format_filename=options.ref_survey_name
                         log.info("Reference catalogue format used: {0}".format(ref_format_filename.split('/')[-1]))
                 else:
-                        ref_format_filename=options.ref_survey_name+'.txt'
+                        ref_format_filename='default_templates/'+options.ref_survey_name+'.txt'
                         log.info("Reference catalogue format used: {0}".format(options.ref_survey_name))
         else:
                 log.error("No reference catalogue table format supplied. Please choose from 'GLEAM', 'TGSS' or specify file name for alternate table format.")
