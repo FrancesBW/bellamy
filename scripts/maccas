@@ -303,8 +303,8 @@ if __name__=='__main':
         g_ref_uuid_data=check_column_exists(ref_values[12],raw_reference_table)
         
         #Finally we want to create Table objects for the reference and target catalogues for the other modules to easily use and reference
-        raw_target_catalog=Table([g_tar_ra_data,g_tar_dec_data,g_tar_err_ra_data,g_tar_err_dec_data,g_tar_psf_a_data,g_tar_psf_b_data,g_tar_a_data,g_tar_b_data,g_tar_peak_flux_data,g_tar_err_peak_flux_data,g_tar_int_flux_data,g_tar_local_rms_data,g_tar_uuid_data],names=('ra','dec','err_ra','err_dec','psf_a','psf_b','a','b','peak_flux','err_peak_flux','int_flux','local_rms','uuid')]
-        raw_reference_catalog=Table([g_ref_ra_data,g_ref_dec_data,g_ref_err_ra_data,g_ref_err_dec_data,g_ref_psf_a_data,g_ref_psf_b_data,g_ref_a_data,g_ref_b_data,g_ref_peak_flux_data,g_ref_err_peak_flux_data,g_ref_int_flux_data,g_ref_local_rms_data,g_ref_uuid_data],names=('ra','dec','err_ra','err_dec','psf_a','psf_b','a','b','peak_flux','err_peak_flux','int_flux','local_rms','uuid')]
+        raw_target_catalog=Table([g_tar_ra_data,g_tar_dec_data,g_tar_err_ra_data,g_tar_err_dec_data,g_tar_psf_a_data,g_tar_psf_b_data,g_tar_a_data,g_tar_b_data,g_tar_peak_flux_data,g_tar_err_peak_flux_data,g_tar_int_flux_data,g_tar_local_rms_data,g_tar_uuid_data],names=('ra','dec','err_ra','err_dec','psf_a','psf_b','a','b','peak_flux','err_peak_flux','int_flux','local_rms','uuid'))
+        raw_reference_catalog=Table([g_ref_ra_data,g_ref_dec_data,g_ref_err_ra_data,g_ref_err_dec_data,g_ref_psf_a_data,g_ref_psf_b_data,g_ref_a_data,g_ref_b_data,g_ref_peak_flux_data,g_ref_err_peak_flux_data,g_ref_int_flux_data,g_ref_local_rms_data,g_ref_uuid_data],names=('ra','dec','err_ra','err_dec','psf_a','psf_b','a','b','peak_flux','err_peak_flux','int_flux','local_rms','uuid'))
                 
                 
         
