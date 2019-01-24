@@ -245,7 +245,7 @@ if __name__=='__main__':
                         sys.exit(1)
         tar_ra_data=raw_target_table[tar_values[0]]
         tar_dec_data=raw_target_table[tar_values[1]]
-               tar_err_ra_data=check_column_exists(tar_values[2],raw_target_table,optional=True,length=target_table_length,variable='target error RA',error=True)
+        tar_err_ra_data=check_column_exists(tar_values[2],raw_target_table,optional=True,length=target_table_length,variable='target error RA',error=True)
         tar_err_dec_data=check_column_exists(tar_values[3],raw_target_table,optional=True,length=target_table_length,variable='target error DEC',error=True)
         tar_psf_a_data=check_column_exists(tar_values[4],raw_target_table,optional=True,length=target_table_length,variable='target psf a')
         tar_psf_b_data=check_column_exists(tar_values[5],raw_target_table,optional=True,length=target_table_length,variable='target psf b')
