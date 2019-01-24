@@ -124,7 +124,7 @@ if __name__=='__main__':
                         g_num_freq='multiple'
                 else:
                         g_ref_freq=ref_values[13]
-                        g_ref_p_or_s=ref_values[14]
+                        g_ref_p_or_s=''
                         g_num_freq='single'
         else:
                 writing_format=[]
@@ -132,6 +132,8 @@ if __name__=='__main__':
                         writing_format.append(ref_required_format[i]+'=\n')
                 with open('reference_catalogue_format.txt', 'w') as f: 
                         f.writelines(writing_format)
+                log.error("{0} cannot be read. Please fill out 'reference_catalogue_format.txt' in your working directory and call it in --refsurvey".format(ref_format_filename))
+                sys.exit(1)
 
         #checks if the user has specified a target catalogue table format. If not go to default
         if options.tar_table_formatting_file!=None:
