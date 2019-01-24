@@ -74,7 +74,7 @@ def model_offsets_and_update_positions(cross_matched_catalogue,target_catalogue,
         modelled_offset_dec=d_dec-model_d_dec(cross_matched_catalogue[tar_ra_column], cross_matched_catalogue[tar_dec_column])
         #print(d_ra)
         #print(model_d_ra(cross_matched_catalogue[tar_ra_column],cross_matched_catalogue[tar_dec_column]))        
-        if g_plot==True:
+        if options.plotting==True:
                 #making quiver plot to show measured offsets
                 fig = plt.figure(figsize=(12, 12))
                 gs = gridspec.GridSpec(100,100)
@@ -85,7 +85,7 @@ def model_offsets_and_update_positions(cross_matched_catalogue,target_catalogue,
                 ax.set_xlabel("Distance from pointing centre / degrees")
                 ax.set_ylabel("Distance from pointing centre / degrees")
                 ax.set_title("Source position offsets / arcsec")
-                plt.savefig("Measured_offsets" +g_file_suffix+"_run_"+str(run_num)+".png")
+                plt.savefig("Measured_offsets" +options.save_file_suffix+"_run_"+str(run_num)+".png")
                 plt.close()
 
                 #making quiver plot to show uniformly sampled modelled offsets
@@ -101,7 +101,7 @@ def model_offsets_and_update_positions(cross_matched_catalogue,target_catalogue,
                 ax.set_xlabel("Distance from pointing centre / degrees")
                 ax.set_ylabel("Distance from pointing centre / degrees")
                 ax.set_title("Source position offsets / arcsec")
-                plt.savefig("Modelled_offsets" +g_file_suffix+"_run_"+str(run_num)+".png")
+                plt.savefig("Modelled_offsets" +options.save_file_suffix+"_run_"+str(run_num)+".png")
                 plt.close()
         
         return target_catalogue_copy
@@ -292,9 +292,9 @@ def flux_model(raw_tar_catalogue,filtered_ref_catalogue):
         flux_ratio=tar_cat_matched_within_resolution['peak_flux']/reference_flux
 
         #use a polynomial 2D model for the field of sources
-        resulting_model=interpolate.LSQBivariateSpline(tar_cat_matched_within_resolution['ra'],tar_cat_matched_within_resolution['dec'],flux_ratio,[min(tar_cat_matched_within_resolution['ra']),max(tar_cat_matched_within_resolution['ra'])],[min(tar_cat_matched_within_resolution['dec']),max(tar_cat_matched_within_resolution['dec'])],kx=g_flux_model_deg,ky=g_flux_model_deg)
+        resulting_model=interpolate.LSQBivariateSpline(tar_cat_matched_within_resolution['ra'],tar_cat_matched_within_resolution['dec'],flux_ratio,[min(tar_cat_matched_within_resolution['ra']),max(tar_cat_matched_within_resolution['ra'])],[min(tar_cat_matched_within_resolution['dec']),max(tar_cat_matched_within_resolution['dec'])],kx=options.flux_model_deg,ky=options.flux_model_deg)
 
-        if g_plot==True:
+        if options.plotting==True:
                 #plot resulting model for user
                 x=tar_cat_matched_within_resolution['ra']
                 y=tar_cat_matched_within_resolution['dec']
@@ -325,7 +325,7 @@ def run():
         print('The filtered reference catalogue has '+str(len(filtered_GLEAM))+' entries')
 
 
-        model_flux=g_flux_model
+        model_flux=options.model_flux
 
         if model_flux==True:
                 model=flux_model(raw_target_table,filtered_GLEAM)
@@ -335,7 +335,7 @@ def run():
 
         #run initial cross match
         print('Run 1')
-        cross_match_table,updated_ref_cat,updated_tar_cat,updated_tar_cat_orig_dist=cross_matching(filtered_GLEAM, raw_target_table, raw_target_table, g_multiple_match_percentile, snr_restriction=snr_restrict,flux_match=g_flux_match)
+        cross_match_table,updated_ref_cat,updated_tar_cat,updated_tar_cat_orig_dist=cross_matching(filtered_GLEAM, raw_target_table, raw_target_table, options.multiple_match_percentile, snr_restriction=snr_restrict,flux_match=options.flux_match)
 
         #modelling will fail if we have less than 2 points, so raise an error before scipy does
         if len(cross_match_table)<2:
@@ -353,12 +353,12 @@ def run():
                 print('Number of cross matches so far: '+str(len(cross_match_table)))
                 start_of_run_cross_match_num=len(cross_match_table)
                 adjusted_tar_cat=model_offsets_and_update_positions(cross_match_table,updated_tar_cat_orig_dist,count)
-                additional_cross_matches,updated_ref_cat,updated_tar_cat,updated_tar_cat_orig_dist=cross_matching(updated_ref_cat,adjusted_tar_cat, updated_tar_cat_orig_dist, multiple_match_percentile,flux_match=g_flux_match)
+                additional_cross_matches,updated_ref_cat,updated_tar_cat,updated_tar_cat_orig_dist=cross_matching(updated_ref_cat,adjusted_tar_cat, updated_tar_cat_orig_dist, options.multiple_match_percentile,flux_match=options.flux_match)
                 #add the new cross matches to the total table
                 cross_match_table=vstack([cross_match_table,additional_cross_matches])
                 end_of_run_cross_match_num=len(cross_match_table)
                 if end_of_run_cross_match_num==start_of_run_cross_match_num:
-                        less_certain_cross_matches,updated_ref_cat,updated_tar_cat,updated_tar_cat_orig_dist=cross_matching(updated_ref_cat,adjusted_tar_cat, updated_tar_cat_orig_dist, g_multiple_match_percentile,flux_match=g_flux_match,final_run=True)
+                        less_certain_cross_matches,updated_ref_cat,updated_tar_cat,updated_tar_cat_orig_dist=cross_matching(updated_ref_cat,adjusted_tar_cat, updated_tar_cat_orig_dist, options.multiple_match_percentile,flux_match=goptions.flux_match,final_run=True)
                         #add the new cross matches to the total table
                         cross_match_table=vstack([cross_match_table,less_certain_cross_matches])
                         improved=False
@@ -368,7 +368,7 @@ def run():
 
         print('Matched '+str(int(target_sources_num-leftover_tar_sources))+ ' out of '+str(int(target_sources_num))+' sources in target catalogue')
 
-        Table(updated_ref_cat).write('leftover_reference_catalogue'+g_file_suffix+'.'+output_format, format=g_output_format,overwrite=True)
-        Table(updated_tar_cat_orig_dist).write('leftover_target_catalogue'+g_file_suffix+'.'+output_format, format=g_output_format,overwrite=True)
-        Table(updated_tar_cat).write('leftover_unwarped_target_catalogue'+g_file_suffix+'.'+output_format, format=g_output_format,overwrite=True)
-        cross_match_table.write('cross_matched_table'+g_file_suffix+'.'+output_format, format=g_output_format,overwrite=True)
+        Table(updated_ref_cat).write('leftover_reference_catalogue'+options.save_file_suffix+'.'+options.output_format, format=options.output_format,overwrite=True)
+        Table(updated_tar_cat_orig_dist).write('leftover_target_catalogue'+options.save_file_suffix+'.'+options.output_format, format=options.output_format,overwrite=True)
+        Table(updated_tar_cat).write('leftover_unwarped_target_catalogue'+options.save_file_suffix+'.'+options.output_format, format=options.output_format,overwrite=True)
+        cross_match_table.write('cross_matched_table'+options.save_file_suffix+'.'+options.output_format, format=options.output_format,overwrite=True)
