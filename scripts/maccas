@@ -130,7 +130,7 @@ if __name__=='__main__':
                 writing_format=[]
                 for i in range(0,15):
                         writing_format.append(ref_required_format[i]+'=\n')
-                with open(install_location+'reference_catalogue_format.txt', 'w') as f: 
+                with open('reference_catalogue_format.txt', 'w') as f: 
                         f.writelines(writing_format)
 
         #checks if the user has specified a target catalogue table format. If not go to default
@@ -143,7 +143,7 @@ if __name__=='__main__':
 
         #read in the target survey file format
         tar_required_format=['RA_name','DEC_name','RA_error_name','DEC_error_name','PSF_semimajor_axis_name','PSF_semiminor_axis_name','source_semimajor_axis_name','source_semiminor_axis_name','peak_flux_name','peak_flux_error_name','integrated_flux_name','local_rms_name','unique_identifier_name']
-        with open(tar_format_filename) as f:
+        with open(data_dir+tar_format_filename) as f:
                 inputs = [line.rstrip('\n') for line in f][:13]
         tar_values=[line.split('=')[1] for line in inputs]
         if [line.split('=')[0] for line in inputs]==tar_required_format:
@@ -152,7 +152,7 @@ if __name__=='__main__':
                 writing_format=[]
                 for i in range(0,13):
                         writing_format.append(required_format[i]+'=\n')
-                with open(install_location+'reference_catalogue_format.txt', 'w') as f: 
+                with open('reference_catalogue_format.txt', 'w') as f: 
                         f.writelines(writing_format)
 
         #apply all the run settings
@@ -308,14 +308,5 @@ if __name__=='__main__':
         #Finally we want to create Table objects for the reference and target catalogues for the other modules to easily use and reference
         raw_target_catalog=Table([g_tar_ra_data,g_tar_dec_data,g_tar_err_ra_data,g_tar_err_dec_data,g_tar_psf_a_data,g_tar_psf_b_data,g_tar_a_data,g_tar_b_data,g_tar_peak_flux_data,g_tar_err_peak_flux_data,g_tar_int_flux_data,g_tar_local_rms_data,g_tar_uuid_data],names=('ra','dec','err_ra','err_dec','psf_a','psf_b','a','b','peak_flux','err_peak_flux','int_flux','local_rms','uuid'))
         raw_reference_catalog=Table([g_ref_ra_data,g_ref_dec_data,g_ref_err_ra_data,g_ref_err_dec_data,g_ref_psf_a_data,g_ref_psf_b_data,g_ref_a_data,g_ref_b_data,g_ref_peak_flux_data,g_ref_err_peak_flux_data,g_ref_int_flux_data,g_ref_local_rms_data,g_ref_uuid_data],names=('ra','dec','err_ra','err_dec','psf_a','psf_b','a','b','peak_flux','err_peak_flux','int_flux','local_rms','uuid'))
-                
-                
         
-        
-        
-
-        
-
-        
-        
-
+        run()
