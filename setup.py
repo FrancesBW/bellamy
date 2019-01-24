@@ -15,7 +15,8 @@ setup(
     description="MACCAS: Multi Attribute Cross-matcher with Correction for wArped Sky",
     url="https://github.com/FrancesBW/radio_cross_matching",
     long_description=['README.md'],
-    packages=[],
+    packages=['functions'],
+    data_files=[('functions', 'functions/default_data/*.txt')],
     install_requires=reqs,
     scripts=['scripts/maccas'],
     classifiers=['Programming Language :: Python :: 2.7']
