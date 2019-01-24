@@ -202,7 +202,7 @@ if __name__=='__main__':
                 log.info("Flux match: Off")
         log.info("Output format: {0}".format(options.output_format))
         log.info("Single match confidence percentile: {0}".format(options.single_match_percentile))
-        log.info("Multiple match confidence percentile: {0}".format(options.mulitple_match_percentile))
+        log.info("Multiple match confidence percentile: {0}".format(options.multiple_match_percentile))
         if options.save_file_suffix==None:
                 options.save_file_suffix=''
                 log.info("No file suffix supplied")
