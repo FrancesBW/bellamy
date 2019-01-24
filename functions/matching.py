@@ -325,7 +325,7 @@ def run():
         print('The filtered reference catalogue has '+str(len(filtered_GLEAM))+' entries')
 
 
-        model_flux=options.model_flux
+        model_flux=g_flux_model
 
         if model_flux==True:
                 model=flux_model(raw_target_table,filtered_GLEAM)
