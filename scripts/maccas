@@ -272,8 +272,8 @@ if __name__=='__main__':
                 if options.tar_freq in np.array(GLEAM_freq, dtype=float):
                         g_ref_freq=GLEAM_freq[np.where(np.array(GLEAM_freq, dtype=float)==options.tar_freq)]
                 else:
-                        above_tar_freq=GLEAM_freq[np.where(np.array(GLEAM_freq, dtype=float)>float(options.tar_freq))]
-                        below_tar_freq=GLEAM_freq[np.where(np.array(GLEAM_freq, dtype=float)<float(options.tar_freq))]
+                        above_tar_freq=np.array(GLEAM_freq)[np.where(np.array(GLEAM_freq, dtype=float)>float(options.tar_freq))]
+                        below_tar_freq=np.array(GLEAM_freq)[np.where(np.array(GLEAM_freq, dtype=float)<float(options.tar_freq))]
                         if len(above_tar_freq)==0:
                                 g_ref_max_freq=GLEAM_freq[-1]
                                 g_ref_min_freq=GLEAM_freq[-2]
