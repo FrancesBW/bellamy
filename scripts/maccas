@@ -228,8 +228,10 @@ if __name__=='__main__':
                                 log.warning("Files beginning with {0} will be overwritten".format(filenames[i]))
 
         #bring the global variables in before running an external function
-        vars_g=[ options, ref_min_freq, ref_max_freq, ref_p_or_s, num_freq, ref_freq]
-        print(globals())
+        if num_freq=='single':
+                vars_g=[ options, None, None, ref_p_or_s, num_freq, ref_freq]
+        else:
+                vars_g=[ options, ref_min_freq, ref_max_freq, ref_p_or_s, num_freq,None]
         
         #We're now going to read in the catalogs, and check that the supplied column names exist in the table
         #Currently only fits support, but will aim to have support for other formats in future revisions
