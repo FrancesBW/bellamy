@@ -295,12 +295,12 @@ if __name__=='__main__':
         g_ref_err_ra_data=check_column_exists(ref_values[2],raw_reference_table,optional=True,length=reference_table_length,variable='reference error RA',error=True)
         g_ref_err_dec_data=check_column_exists(ref_values[3],raw_reference_table,optional=True,length=reference_table_length,variable='reference error DEC',error=True)
         #at least one of the four columns from either catalogue needs to have data for the program to proceed, so we must force this last one to have data
-        print(g_tar_err_ra_data, type(g_tar_err_ra_data))
-        print(g_tar_err_dec_data, type(g_tar_err_dec_data))
-        print(g_tar_psf_a_data, type(g_tar_psf_a_data))
-        print(g_tar_psf_b_data, type(g_tar_psf_b_data))
-        print(g_ref_err_ra_data, type(g_ref_err_ra_data))
-        print(g_ref_err_dec_data, type(g_ref_err_dec_data))
+        print(g_tar_err_ra_data, g_tar_err_ra_data.dtype)
+        print(g_tar_err_dec_data, g_tar_err_dec_data.dtype)
+        print(g_tar_psf_a_data, g_tar_psf_a_data.dtype)
+        print(g_tar_psf_b_data, g_tar_psf_b_data.dtype)
+        print(g_ref_err_ra_data, g_ref_err_ra_data.dtype)
+        print(g_ref_err_dec_data, g_ref_err_dec_data.dtype)
         if np.sum(g_tar_err_ra_data,g_tar_err_dec_data,g_tar_psf_a_data,g_tar_psf_b_data)+np.sum(g_ref_err_ra_data,g_ref_err_dec_data)==0:
                 g_ref_psf_a_data=check_column_exists(ref_values[4],raw_reference_table)
                 g_ref_psf_b_data=check_column_exists(ref_values[5],raw_reference_table)
