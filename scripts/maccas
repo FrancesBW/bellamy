@@ -62,6 +62,7 @@ if __name__=='__main__':
         #set up logging
         FORMAT = '%(asctime)-10s MACCAS  %(message)s'
         logging.basicConfig(format=FORMAT)
+        global log
         log=logging.getLogger("MACCAS")
         logging_level = logging.DEBUG if options.debug else logging.INFO
         log.setLevel(logging_level)
