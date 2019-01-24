@@ -11,5 +11,3 @@ peak_flux_error_name=err_peak_flux
 integrated_flux_name=int_flux
 local_rms_name=local_rms
 unique_identifier_name=uuid
-
-
