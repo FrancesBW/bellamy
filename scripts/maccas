@@ -115,7 +115,7 @@ if __name__=='__main__':
         ref_values=[line.split('=')[1] for line in inputs]
         if [line.split('=')[0] for line in inputs]==ref_required_format:
                 g_ref_ra, g_ref_dec, g_ref_err_ra, g_ref_err_dec, g_ref_psf_a, g_ref_psf_b, g_ref_a, g_ref_b, g_ref_peak_flux, g_ref_err_peak_flux, g_ref_int_flux,g_ref_local_rms, g_ref_uuid=ref_values[:13]
-                if '-' in values[13]:
+                if '-' in ref_values[13]:
                         g_ref_min_freq=ref_values[13].split('-')[0]
                         #g_ref_min_freq=min(np.array(ref_values[13].split('-'),dtype=np.float))
                         g_ref_max_freq=ref_values[13].split('-')[1]
