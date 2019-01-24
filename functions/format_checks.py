@@ -20,36 +20,36 @@ def check_column_exists(column,table,optional=False,length=None, variable=None,e
                 return test
         #if it cannot be found, check if there is a frequency prefix, with or without the underscore
         except KeyError:
-                if g_ref_p_or_s=='prefix':
+                if ref_p_or_s=='prefix':
                         try:
-                                if g_num_freq=='single':
-                                        test=table[g_ref_freq+'_'+column]
+                                if num_freq=='single':
+                                        test=table[ref_freq+'_'+column]
                                         return test
                                 else:
                                         #interpolate the data if it falls between frequencies
-                                        test_1=table[g_ref_min_freq+'_'+column]
-                                        test_2=table[g_ref_max_freq+'_'+column]
+                                        test_1=table[ref_min_freq+'_'+column]
+                                        test_2=table[ref_max_freq+'_'+column]
                                         if error==False:
-                                                interpol=interpolate.interp1d([float(g_ref_min_freq),float(g_ref_max_freq)],[test_1,test_2],axis=0)
+                                                interpol=interpolate.interp1d([float(ref_min_freq),float(ref_max_freq)],[test_1,test_2],axis=0)
                                                 return interpol(options.tar_freq)
                                         else:
                                                 #if it is error, apply the appropriate error propagation given the interpolation
-                                                return np.sqrt((test_1*((float(g_ref_max_freq)-options.tar_freq)/(float(g_ref_max_freq)-float(g_ref_min_freq))))**2+(test_2*((options.tar_freq-float(g_ref_min_freq))/(float(g_ref_max_freq)-float(g_ref_min_freq))))**2)
+                                                return np.sqrt((test_1*((float(ref_max_freq)-options.tar_freq)/(float(ref_max_freq)-float(ref_min_freq))))**2+(test_2*((options.tar_freq-float(ref_min_freq))/(float(ref_max_freq)-float(ref_min_freq))))**2)
                         except KeyError:
                                 try:
-                                        if g_num_freq=='single':
-                                                test=table[g_ref_freq+column]
+                                        if num_freq=='single':
+                                                test=table[ref_freq+column]
                                                 return test
                                         else:
                                                 #interpolate the data if it falls between frequencies
-                                                test_1=table[g_ref_min_freq+column]
-                                                test_2=table[g_ref_max_freq+column]
+                                                test_1=table[gref_min_freq+column]
+                                                test_2=table[ref_max_freq+column]
                                                 if error==False:
-                                                        interpol=interpolate.interp1d([float(g_ref_min_freq),float(g_ref_max_freq)],[test_1,test_2],axis=0)
+                                                        interpol=interpolate.interp1d([float(ref_min_freq),float(ref_max_freq)],[test_1,test_2],axis=0)
                                                         return interpol(options.tar_freq)
                                                 else:
                                                         #if it is error, apply the appropriate error propagation given the interpolation
-                                                        return np.sqrt((test_1*((float(g_ref_max_freq)-options.tar_freq)/(float(g_ref_max_freq)-float(g_ref_min_freq))))**2+(test_2*((options.tar_freq-float(g_ref_min_freq))/(float(g_ref_max_freq)-float(g_ref_min_freq))))**2)
+                                                        return np.sqrt((test_1*((float(ref_max_freq)-options.tar_freq)/(float(ref_max_freq)-float(ref_min_freq))))**2+(test_2*((options.tar_freq-float(ref_min_freq))/(float(ref_max_freq)-float(ref_min_freq))))**2)
                                 except KeyError:
                                         #if no column matching either 3 names can be found, throw we can either return no data and continue or raise a fatal error
                                         if optional==True:
@@ -58,39 +58,39 @@ def check_column_exists(column,table,optional=False,length=None, variable=None,e
                                                 return np.zeros(length)
                                         else:
                                                 #data is required for algorithm to proceed, log error and exit the program
-                                                log.error("Could not find column '{0}', '{1}_{0}' or '{1}{0}'. Please edit format file to reflect catalogue column names".format(column, g_ref_min_freq+'/'+g_ref_max_freq))
+                                                log.error("Could not find column '{0}', '{1}_{0}' or '{1}{0}'. Please edit format file to reflect catalogue column names".format(column, ref_min_freq+'/'+ref_max_freq))
                                                 sys.exit(1)
                 #if it cannot be found, check if there is a frequency suffix, with or without the underscore
-                elif g_ref_p_or_s=='suffix':
+                elif ref_p_or_s=='suffix':
                         try:
-                                if g_num_freq=='single':
-                                        test=table[column+'_'+g_ref_freq]
+                                if num_freq=='single':
+                                        test=table[column+'_'+ref_freq]
                                         return test
                                 else:
                                         #interpolate the data if it falls between frequencies
-                                        test_1=table[column+'_'+g_ref_min_freq]
-                                        test_2=table[column+'_'+g_ref_max_freq]
+                                        test_1=table[column+'_'+ref_min_freq]
+                                        test_2=table[column+'_'+ref_max_freq]
                                         if error==False:
-                                                interpol=interpolate.interp1d([float(g_ref_min_freq),float(g_ref_max_freq)],[test_1,test_2],axis=0)
+                                                interpol=interpolate.interp1d([float(ref_min_freq),float(ref_max_freq)],[test_1,test_2],axis=0)
                                                 return interpol(options.tar_freq)
                                         else:
                                                 #if it is error, apply the appropriate error propagation given the interpolation
-                                                return np.sqrt((test_1*((float(g_ref_max_freq)-options.tar_freq)/(float(g_ref_max_freq)-float(g_ref_min_freq))))**2+(test_2*((options.tar_freq-float(g_ref_min_freq))/(float(g_ref_max_freq)-float(g_ref_min_freq))))**2)
+                                                return np.sqrt((test_1*((float(ref_max_freq)-options.tar_freq)/(float(ref_max_freq)-float(ref_min_freq))))**2+(test_2*((options.tar_freq-float(ref_min_freq))/(float(ref_max_freq)-float(ref_min_freq))))**2)
                         except KeyError:
                                 try:
-                                        if g_num_freq=='single':
-                                                test=table[column+g_ref_freq]
+                                        if num_freq=='single':
+                                                test=table[column+ref_freq]
                                                 return test
                                         else:
                                                 #interpolate the data if it falls between frequencies
-                                                test_1=table[column+g_ref_min_freq]
-                                                test_2=table[column+g_ref_max_freq]
+                                                test_1=table[column+ref_min_freq]
+                                                test_2=table[column+ref_max_freq]
                                                 if error==False:
-                                                        interpol=interpolate.interp1d([float(g_ref_min_freq),float(g_ref_max_freq)],[test_1,test_2],axis=0)
+                                                        interpol=interpolate.interp1d([float(ref_min_freq),float(ref_max_freq)],[test_1,test_2],axis=0)
                                                         return interpol(options.tar_freq)
                                                 else:
                                                         #if it is error, apply the appropriate error propagation given the interpolation
-                                                        return np.sqrt((test_1*((float(g_ref_max_freq)-options.tar_freq)/(float(g_ref_max_freq)-float(g_ref_min_freq))))**2+(test_2*((options.tar_freq-float(g_ref_min_freq))/(float(g_ref_max_freq)-float(g_ref_min_freq))))**2)
+                                                        return np.sqrt((test_1*((float(ref_max_freq)-options.tar_freq)/(float(ref_max_freq)-float(ref_min_freq))))**2+(test_2*((options.tar_freq-float(ref_min_freq))/(float(ref_max_freq)-float(ref_min_freq))))**2)
                                 except KeyError:
                                         #if no column matching either 3 names can be found, throw we can either return no data and continue or raise a fatal error
                                         if optional==True:
@@ -99,7 +99,7 @@ def check_column_exists(column,table,optional=False,length=None, variable=None,e
                                                 return np.zeros(length)
                                         else:
                                                 #data is required for algorithm to proceed, log error and exit the program
-                                                log.error("Could not find column '{0}', '{1}_{0}' or '{1}{0}'. Please edit format file to reflect catalogue column names".format(column, g_ref_min_freq+'/'+g_ref_max_freq))
+                                                log.error("Could not find column '{0}', '{1}_{0}' or '{1}{0}'. Please edit format file to reflect catalogue column names".format(column, ref_min_freq+'/'+ref_max_freq))
                                                 sys.exit(1)
                 else:
                         #This path is executed if there is no prefix or suffix to the column name and the column name by itself cannot be found
