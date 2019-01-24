@@ -13,5 +13,3 @@ local_rms_name=
 unique_identifier_name=Source_name
 frequency=150
 frequency_prefix_or_suffix=
-
-
