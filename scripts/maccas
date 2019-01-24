@@ -22,8 +22,8 @@ from copy import copy
 import warnings
 import logging
 import logging.config
-from functions.format_checks import *
-from functions.matching import *
+from format_checks import *
+from matching import *
 
 warnings.filterwarnings("ignore", category=UserWarning) 
 
