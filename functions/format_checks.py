@@ -16,7 +16,7 @@ def check_column_exists(column,table,var,optional=False,length=None, variable=No
         :return: data from column if it exists, column of zeroes if data cannot be found or system exit is required column cannot be found.
         """
         #unpack var
-        options, ref_min_freq, ref_max_freq, ref_p_or_s, num_freq, ref_freq=var
+        options, ref_min_freq, ref_max_freq, ref_p_or_s, num_freq, ref_freq,log=var
         
         #first try the column name as is
         try:
