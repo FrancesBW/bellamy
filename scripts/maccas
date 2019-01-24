@@ -229,6 +229,7 @@ if __name__=='__main__':
 
         #bring the global variables in before running an external function
         global options, ref_min_freq, ref_max_freq, ref_p_or_s, num_freq, ref_freq
+        print(globals())
         
         #We're now going to read in the catalogs, and check that the supplied column names exist in the table
         #Currently only fits support, but will aim to have support for other formats in future revisions
