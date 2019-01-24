@@ -219,7 +219,7 @@ if __name__=='__main__':
                 log.info("File suffix: {0}".format(g_save_file_suffix))
 
         #we're going to quickly double check if the filenames already exist in our directory
-        filenames=['leftover_reference_catalogue'+g_save_file_suffix+'.'+output_format,'leftover_target_catalogue'+g_save_file_suffix+'.'+output_format,'leftover_unwarped_target_catalogue'+g_save_file_suffix+'.'+output_format,'cross_matched_table'+g_save_file_suffix+'.'+output_format,"Modelled_offsets" +g_save_file_suffix+"_run_","Measured_offsets" +g_save_file_suffix+"_run_"]
+        filenames=['leftover_reference_catalogue'+g_save_file_suffix+'.'+g_output_format,'leftover_target_catalogue'+g_save_file_suffix+'.'+g_output_format,'leftover_unwarped_target_catalogue'+g_save_file_suffix+'.'+g_output_format,'cross_matched_table'+g_save_file_suffix+'.'+g_output_format,"Modelled_offsets" +g_save_file_suffix+"_run_","Measured_offsets" +g_save_file_suffix+"_run_"]
         for i in range(0,4):
                 if os.path.exists(filenames[i])==False:
                         log.error("{0} already exists".format(filenames[i]))
