@@ -1,11 +1,12 @@
 #! /usr/bin/env python
 
-def check_column_exists(column,table,optional=False,length=None, variable=None,error=False):
+def check_column_exists(column,table,var,optional=False,length=None, variable=None,error=False):
         """
         Check that columns exist in a table and return that column. If interpolation is needed from the reference catalog return the interpolated column. If the column is an error column, return the appropriate interpolated error. Error will be raised if essential column cannot be found.
         
         :param column: the name of the column
         :param table: table being serached for the column name
+        :param var: the variable pulled from the script needed for this function
 
         :param optional: If True and column cannot be found, a column of zeroes will be returned and error will not be raised, merely warning message will be logged (optional, default is False)
         :param length: Length of table, only required if optional is True (optional, default is None)
@@ -14,6 +15,9 @@ def check_column_exists(column,table,optional=False,length=None, variable=None,e
 
         :return: data from column if it exists, column of zeroes if data cannot be found or system exit is required column cannot be found.
         """
+        #unpack var
+        options, ref_min_freq, ref_max_freq, ref_p_or_s, num_freq, ref_freq=var
+        
         #first try the column name as is
         try:
                 test=table[column]
