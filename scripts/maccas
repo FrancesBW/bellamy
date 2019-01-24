@@ -29,6 +29,7 @@ warnings.filterwarnings("ignore", category=UserWarning)
 print("os.getcwd: "+os.getcwd())
 print("os.ctermid: "+os.ctermid())
 print("os.path.dirname(sys.executable): "+os.path.dirname(sys.executable))
+print("last one: ",os.path.split(__file__))
 
 if __name__=='__main__':
         
