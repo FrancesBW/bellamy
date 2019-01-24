@@ -16,7 +16,7 @@ setup(
     url="https://github.com/FrancesBW/radio_cross_matching",
     long_description=['README.md'],
     packages=['functions'],
-    data_files=[('functions', ['functions/default_data/GLEAM.txt'],['functions/default_data/TGSS.txt'],['functions/default_data/target_format_default.txt'],['format_templates/reference_catalogue_format'],['format_templates/target_catalogue_format'])],
+    data_files=[('', ['functions/default_data/GLEAM.txt','functions/default_data/TGSS.txt','functions/default_data/target_format_default.txt','format_templates/reference_catalogue_format','format_templates/target_catalogue_format'])],
     install_requires=reqs,
     scripts=['scripts/maccas'],
     classifiers=['Programming Language :: Python :: 2.7']
