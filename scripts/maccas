@@ -32,6 +32,8 @@ print("os.ctermid: "+os.ctermid())
 print("os.path.dirname(sys.executable): "+os.path.dirname(sys.executable))
 print("last one: ",os.path.split(__file__))
 
+data_dir="~"+os.path.dirname(sys.executable)+"../maccas_catalog_formats"
+
 if __name__=='__main__':
         
         parser=argparse.ArgumentParser(prog='maccas',prefix_chars='-')
@@ -105,7 +107,7 @@ if __name__=='__main__':
                         ref_format_filename=options.ref_survey_name
                         log.info("Reference catalogue format used: {0}".format(ref_format_filename.split('/')[-1]))
                 else:
-                        ref_format_filename='default_templates/'+options.ref_survey_name+'.txt'
+                        ref_format_filename=data_dir+options.ref_survey_name+'.txt'
                         log.info("Reference catalogue format used: {0}".format(options.ref_survey_name))
         else:
                 log.error("No reference catalogue table format supplied. Please choose from 'GLEAM', 'TGSS' or specify file name for alternate table format.")
