@@ -27,12 +27,7 @@ from functions.matching import *
 
 warnings.filterwarnings("ignore", category=UserWarning) 
 
-print("os.getcwd: "+os.getcwd())
-print("os.ctermid: "+os.ctermid())
-print("os.path.dirname(sys.executable): "+os.path.dirname(sys.executable))
-print("last one: ",os.path.split(__file__))
-
-data_dir="~"+os.path.dirname(sys.executable)+"/maccas_catalog_formats/"
+data_dir=os.path.join("~",os.path.dirname(sys.executable),"/maccas_catalog_formats/")
 
 if __name__=='__main__':
         
