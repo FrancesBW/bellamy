@@ -62,7 +62,6 @@ if __name__=='__main__':
         #set up logging
         FORMAT = '%(asctime)-10s MACCAS  %(message)s'
         logging.basicConfig(format=FORMAT)
-        global log
         log=logging.getLogger("MACCAS")
         logging_level = logging.DEBUG if options.debug else logging.INFO
         log.setLevel(logging_level)
@@ -230,9 +229,9 @@ if __name__=='__main__':
 
         #bring the global variables in before running an external function
         if num_freq=='single':
-                vars_g=[ options, None, None, ref_p_or_s, num_freq, ref_freq]
+                vars_g=[ options, None, None, ref_p_or_s, num_freq, ref_freq,log]
         else:
-                vars_g=[ options, ref_min_freq, ref_max_freq, ref_p_or_s, num_freq,None]
+                vars_g=[ options, ref_min_freq, ref_max_freq, ref_p_or_s, num_freq,None,log]
         
         #We're now going to read in the catalogs, and check that the supplied column names exist in the table
         #Currently only fits support, but will aim to have support for other formats in future revisions
@@ -315,4 +314,4 @@ if __name__=='__main__':
         raw_target_catalog=Table([tar_ra_data,tar_dec_data,tar_err_ra_data,tar_err_dec_data,tar_psf_a_data,tar_psf_b_data,tar_a_data,tar_b_data,tar_peak_flux_data,tar_err_peak_flux_data,tar_int_flux_data,tar_local_rms_data,tar_uuid_data],names=('ra','dec','err_ra','err_dec','psf_a','psf_b','a','b','peak_flux','err_peak_flux','int_flux','local_rms','uuid'))
         raw_reference_catalog=Table([ref_ra_data,ref_dec_data,ref_err_ra_data,ref_err_dec_data,ref_psf_a_data,ref_psf_b_data,ref_a_data,ref_b_data,ref_peak_flux_data,ref_err_peak_flux_data,ref_int_flux_data,ref_local_rms_data,ref_uuid_data],names=('ra','dec','err_ra','err_dec','psf_a','psf_b','a','b','peak_flux','err_peak_flux','int_flux','local_rms','uuid'))
         
-        run(raw_target_catalog, raw_reference_catalog, snr_restrict)
+        run(raw_target_catalog, raw_reference_catalog, snr_restrict,log)
