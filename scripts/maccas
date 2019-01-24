@@ -221,11 +221,19 @@ if __name__=='__main__':
         #we're going to quickly double check if the filenames already exist in our directory
         filenames=['leftover_reference_catalogue'+g_save_file_suffix+'.'+g_output_format,'leftover_target_catalogue'+g_save_file_suffix+'.'+g_output_format,'leftover_unwarped_target_catalogue'+g_save_file_suffix+'.'+g_output_format,'cross_matched_table'+g_save_file_suffix+'.'+g_output_format,"Modelled_offsets" +g_save_file_suffix+"_run_","Measured_offsets" +g_save_file_suffix+"_run_"]
         for i in range(0,4):
-                if os.path.exists(filenames[i])==False:
-                        log.error("{0} already exists".format(filenames[i]))
+                if os.path.exists(filenames[i])==True:
+                        if g_overwrite==False:
+                                log.error("{0} already exists".format(filenames[i]))
+                                sys.exit(1)
+                        else:
+                                log.warning("{0} will be overwritten".format(filenames[i]))
         for i in range(4,6):
-                if glob.glob(filenames[i]+'*.png')>0:
-                        log.error("Files beginning with {0} already exist".format(filenames[i]))
+                if len(glob.glob(filenames[i]+'*.png'))>0:
+                        if g_overwrite==False:     
+                                log.error("Files beginning with {0} already exist".format(filenames[i]))
+                                sys.exit(1)
+                        else:
+                                log.warning("Files beginning with {0} will be overwritten".format(filenames[i]))
 
 
         #We're now going to read in the catalogs, and check that the supplied column names exist in the table
