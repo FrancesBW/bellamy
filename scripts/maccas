@@ -228,7 +228,7 @@ if __name__=='__main__':
                                 log.warning("Files beginning with {0} will be overwritten".format(filenames[i]))
 
         #bring the global variables in before running an external function
-        global options, ref_min_freq, ref_max_freq, ref_p_or_s, num_freq, ref_freq
+        vars_g=[ options, ref_min_freq, ref_max_freq, ref_p_or_s, num_freq, ref_freq]
         print(globals())
         
         #We're now going to read in the catalogs, and check that the supplied column names exist in the table
@@ -248,17 +248,17 @@ if __name__=='__main__':
                         sys.exit(1)
         tar_ra_data=raw_target_table[tar_values[0]]
         tar_dec_data=raw_target_table[tar_values[1]]
-        tar_err_ra_data=check_column_exists(tar_values[2],raw_target_table,optional=True,length=target_table_length,variable='target error RA',error=True)
-        tar_err_dec_data=check_column_exists(tar_values[3],raw_target_table,optional=True,length=target_table_length,variable='target error DEC',error=True)
-        tar_psf_a_data=check_column_exists(tar_values[4],raw_target_table,optional=True,length=target_table_length,variable='target psf a')
-        tar_psf_b_data=check_column_exists(tar_values[5],raw_target_table,optional=True,length=target_table_length,variable='target psf b')
-        tar_a_data=check_column_exists(tar_values[6],raw_target_table,optional=True,length=target_table_length,variable='target a')
-        tar_b_data=check_column_exists(ref_values[7],raw_target_table,optional=True,length=target_table_length,variable='target b')
-        tar_peak_flux_data=check_column_exists(ref_values[8],raw_target_table)
-        tar_err_peak_flux_data=check_column_exists(tar_values[9],raw_target_table,optional=True,length=target_table_length,variable='target error peak flux',error=True)
-        tar_int_flux_data=check_column_exists(tar_values[10],raw_target_table,optional=True,length=target_table_length,variable='target integrated/total flux')
-        tar_local_rms_data=check_column_exists(tar_values[11],raw_target_table,optional=True,length=target_table_length,variable='target local rms')
-        tar_uuid_data=check_column_exists(tar_values[12],raw_target_table)
+        tar_err_ra_data=check_column_exists(tar_values[2],raw_target_table,vars_g,optional=True,length=target_table_length,variable='target error RA',error=True)
+        tar_err_dec_data=check_column_exists(tar_values[3],raw_target_table,vars_g,optional=True,length=target_table_length,variable='target error DEC',error=True)
+        tar_psf_a_data=check_column_exists(tar_values[4],raw_target_table,vars_g,optional=True,length=target_table_length,variable='target psf a')
+        tar_psf_b_data=check_column_exists(tar_values[5],raw_target_table,vars_g,optional=True,length=target_table_length,variable='target psf b')
+        tar_a_data=check_column_exists(tar_values[6],raw_target_table,vars_g,optional=True,length=target_table_length,variable='target a')
+        tar_b_data=check_column_exists(ref_values[7],raw_target_table,vars_g,optional=True,length=target_table_length,variable='target b')
+        tar_peak_flux_data=check_column_exists(ref_values[8],raw_target_table,vars_g)
+        tar_err_peak_flux_data=check_column_exists(tar_values[9],raw_target_table,vars_g,optional=True,length=target_table_length,variable='target error peak flux',error=True)
+        tar_int_flux_data=check_column_exists(tar_values[10],raw_target_table,vars_g,optional=True,length=target_table_length,variable='target integrated/total flux')
+        tar_local_rms_data=check_column_exists(tar_values[11],raw_target_table,vars_g,optional=True,length=target_table_length,variable='target local rms')
+        tar_uuid_data=check_column_exists(tar_values[12],raw_target_table,vars_g)
                         
         supported_catalogues=['GLEAM','TGSS']
         #reference catalog has the possibility of single or multiple frequency, need to check the column names exist in each type of reference catalog
@@ -287,30 +287,29 @@ if __name__=='__main__':
                         sys.exit(1)
         ref_ra_data=raw_reference_table[ref_values[0]]
         ref_dec_data=raw_reference_table[ref_values[1]]
-        ref_err_ra_data=check_column_exists(ref_values[2],raw_reference_table,optional=True,length=reference_table_length,variable='reference error RA',error=True)
-        ref_err_dec_data=check_column_exists(ref_values[3],raw_reference_table,optional=True,length=reference_table_length,variable='reference error DEC',error=True)
+        ref_err_ra_data=check_column_exists(ref_values[2],raw_reference_table,vars_g,optional=True,length=reference_table_length,variable='reference error RA',error=True)
+        ref_err_dec_data=check_column_exists(ref_values[3],raw_reference_table,vars_g,optional=True,length=reference_table_length,variable='reference error DEC',error=True)
         #at least one of the four columns from either catalogue needs to have data for the program to proceed, so we must force this last one to have data
         if np.sum([tar_err_ra_data,tar_err_dec_data,tar_psf_a_data,tar_psf_b_data])+np.sum([ref_err_ra_data,ref_err_dec_data])==0:
-                ref_psf_a_data=check_column_exists(ref_values[4],raw_reference_table)
-                ref_psf_b_data=check_column_exists(ref_values[5],raw_reference_table)
+                ref_psf_a_data=check_column_exists(ref_values[4],raw_reference_table,vars_g)
+                ref_psf_b_data=check_column_exists(ref_values[5],raw_reference_table,vars_g)
         else:
-                ref_psf_a_data=check_column_exists(ref_values[4],raw_reference_table,optional=True,length=reference_table_length,variable='reference psf a')
-                ref_psf_b_data=check_column_exists(ref_values[5],raw_reference_table,optional=True,length=reference_table_length,variable='reference psf b')
-        ref_a_data=check_column_exists(ref_values[6],raw_reference_table,optional=True,length=reference_table_length,variable='reference a')
-        ref_b_data=check_column_exists(ref_values[7],raw_reference_table,optional=True,length=reference_table_length,variable='reference b')
-        ref_peak_flux_data=check_column_exists(ref_values[8],raw_reference_table)
-        ref_err_peak_flux_data=check_column_exists(ref_values[9],raw_reference_table,optional=True,length=reference_table_length,variable='reference error peak flux',error=True)
-        ref_int_flux_data=check_column_exists(ref_values[10],raw_reference_table,optional=True,length=reference_table_length,variable='reference integrated/total flux')
+                ref_psf_a_data=check_column_exists(ref_values[4],raw_reference_table,vars_g,optional=True,length=reference_table_length,variable='reference psf a')
+                ref_psf_b_data=check_column_exists(ref_values[5],raw_reference_table,vars_g,optional=True,length=reference_table_length,variable='reference psf b')
+        ref_a_data=check_column_exists(ref_values[6],raw_reference_table,vars_g,optional=True,length=reference_table_length,variable='reference a')
+        ref_b_data=check_column_exists(ref_values[7],raw_reference_table,vars_g,optional=True,length=reference_table_length,variable='reference b')
+        ref_peak_flux_data=check_column_exists(ref_values[8],raw_reference_table,vars_g)
+        ref_err_peak_flux_data=check_column_exists(ref_values[9],raw_reference_table,vars_g,optional=True,length=reference_table_length,variable='reference error peak flux',error=True)
+        ref_int_flux_data=check_column_exists(ref_values[10],raw_reference_table,vars_g,optional=True,length=reference_table_length,variable='reference integrated/total flux')
         #again, if the other columns have no data, this one must, so it cannot be optional
         if np.sum([tar_err_peak_flux_data,tar_local_rms_data])+np.sum([ref_err_peak_flux_data])==0:
-                ref_local_rms_data=check_column_exists(ref_values[11],raw_reference_table)
+                ref_local_rms_data=check_column_exists(ref_values[11],raw_reference_table,vars_g)
         else:
-                ref_local_rms_data=check_column_exists(ref_values[11],raw_reference_table,optional=True,length=reference_table_length,variable='reference local rms')
+                ref_local_rms_data=check_column_exists(ref_values[11],raw_reference_table,vars_g,optional=True,length=reference_table_length,variable='reference local rms')
         ref_uuid_data=check_column_exists(ref_values[12],raw_reference_table)
         
         #Finally we want to create Table objects for the reference and target catalogues for the other modules to easily use and reference
         raw_target_catalog=Table([tar_ra_data,tar_dec_data,tar_err_ra_data,tar_err_dec_data,tar_psf_a_data,tar_psf_b_data,tar_a_data,tar_b_data,tar_peak_flux_data,tar_err_peak_flux_data,tar_int_flux_data,tar_local_rms_data,tar_uuid_data],names=('ra','dec','err_ra','err_dec','psf_a','psf_b','a','b','peak_flux','err_peak_flux','int_flux','local_rms','uuid'))
         raw_reference_catalog=Table([ref_ra_data,ref_dec_data,ref_err_ra_data,ref_err_dec_data,ref_psf_a_data,ref_psf_b_data,ref_a_data,ref_b_data,ref_peak_flux_data,ref_err_peak_flux_data,ref_int_flux_data,ref_local_rms_data,ref_uuid_data],names=('ra','dec','err_ra','err_dec','psf_a','psf_b','a','b','peak_flux','err_peak_flux','int_flux','local_rms','uuid'))
         
-        global  raw_target_catalog, raw_reference_catalog, snr_restrict
-        run()
+        run(raw_target_catalog, raw_reference_catalog, snr_restrict)
