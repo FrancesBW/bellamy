@@ -227,7 +227,9 @@ if __name__=='__main__':
                         else:
                                 log.warning("Files beginning with {0} will be overwritten".format(filenames[i]))
 
-
+        #bring the global variables in before running an external function
+        global options, ref_min_freq, ref_max_freq, ref_p_or_s, num_freq, ref_freq
+        
         #We're now going to read in the catalogs, and check that the supplied column names exist in the table
         #Currently only fits support, but will aim to have support for other formats in future revisions
         raw_reference_table=np.squeeze(fits.open(reference_cat_filename)[1].data)
@@ -309,5 +311,5 @@ if __name__=='__main__':
         raw_target_catalog=Table([tar_ra_data,tar_dec_data,tar_err_ra_data,tar_err_dec_data,tar_psf_a_data,tar_psf_b_data,tar_a_data,tar_b_data,tar_peak_flux_data,tar_err_peak_flux_data,tar_int_flux_data,tar_local_rms_data,tar_uuid_data],names=('ra','dec','err_ra','err_dec','psf_a','psf_b','a','b','peak_flux','err_peak_flux','int_flux','local_rms','uuid'))
         raw_reference_catalog=Table([ref_ra_data,ref_dec_data,ref_err_ra_data,ref_err_dec_data,ref_psf_a_data,ref_psf_b_data,ref_a_data,ref_b_data,ref_peak_flux_data,ref_err_peak_flux_data,ref_int_flux_data,ref_local_rms_data,ref_uuid_data],names=('ra','dec','err_ra','err_dec','psf_a','psf_b','a','b','peak_flux','err_peak_flux','int_flux','local_rms','uuid'))
         
-        global  options, raw_target_catalog, raw_reference_catalog, snr_restrict, ref_min_freq, ref_max_freq, ref_p_or_s, num_freq, ref_freq
+        global  raw_target_catalog, raw_reference_catalog, snr_restrict
         run()
