@@ -1,4 +1,27 @@
 #! /usr/bin/env python
+from __future__ import print_function
+import numpy as np
+import os
+#import textwrap
+from scipy import interpolate
+from scipy.interpolate import CloughTocher2DInterpolator
+import astropy
+from astropy import wcs
+from astropy.io import fits
+from astropy.io.votable import parse_single_table
+from astropy.coordinates import SkyCoord, Angle, Latitude, Longitude, SkyOffsetFrame
+from astropy.table import Table, hstack, join, vstack
+import astropy.units as u
+import sys
+import glob
+import argparse
+#import psutil
+import matplotlib.pyplot as plt
+from matplotlib import gridspec
+from copy import copy
+import warnings
+import logging
+import logging.config
 
 def check_column_exists(column,table,var,optional=False,length=None, variable=None,error=False):
         """
