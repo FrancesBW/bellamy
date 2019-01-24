@@ -295,13 +295,7 @@ if __name__=='__main__':
         g_ref_err_ra_data=check_column_exists(ref_values[2],raw_reference_table,optional=True,length=reference_table_length,variable='reference error RA',error=True)
         g_ref_err_dec_data=check_column_exists(ref_values[3],raw_reference_table,optional=True,length=reference_table_length,variable='reference error DEC',error=True)
         #at least one of the four columns from either catalogue needs to have data for the program to proceed, so we must force this last one to have data
-        print(g_tar_err_ra_data, g_tar_err_ra_data.dtype)
-        print(g_tar_err_dec_data, g_tar_err_dec_data.dtype)
-        print(g_tar_psf_a_data, g_tar_psf_a_data.dtype)
-        print(g_tar_psf_b_data, g_tar_psf_b_data.dtype)
-        print(g_ref_err_ra_data, g_ref_err_ra_data.dtype)
-        print(g_ref_err_dec_data, g_ref_err_dec_data.dtype)
-        if np.sum(g_tar_err_ra_data,g_tar_err_dec_data,g_tar_psf_a_data,g_tar_psf_b_data)+np.sum(g_ref_err_ra_data,g_ref_err_dec_data)==0:
+        if np.sum([g_tar_err_ra_data,g_tar_err_dec_data,g_tar_psf_a_data,g_tar_psf_b_data])+np.sum([g_ref_err_ra_data,g_ref_err_dec_data])==0:
                 g_ref_psf_a_data=check_column_exists(ref_values[4],raw_reference_table)
                 g_ref_psf_b_data=check_column_exists(ref_values[5],raw_reference_table)
         else:
@@ -313,7 +307,7 @@ if __name__=='__main__':
         g_ref_err_peak_flux_data=check_column_exists(ref_values[9],raw_reference_table,optional=True,length=reference_table_length,variable='reference error peak flux',error=True)
         g_ref_int_flux_data=check_column_exists(ref_values[10],raw_reference_table,optional=True,length=reference_table_length,variable='reference integrated/total flux')
         #again, if the other columns have no data, this one must, so it cannot be optional
-        if np.sum(g_tar_err_peak_flux_data,g_tar_local_rms_data)+np.sum(g_ref_err_peak_flux_data)==0:
+        if np.sum([g_tar_err_peak_flux_data,g_tar_local_rms_data])+np.sum([g_ref_err_peak_flux_data])==0:
                 g_ref_local_rms_data=check_column_exists(ref_values[11],raw_reference_table)
         else:
                 g_ref_local_rms_data=check_column_exists(ref_values[11],raw_reference_table,optional=True,length=reference_table_length,variable='reference local rms')
