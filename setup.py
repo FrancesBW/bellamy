@@ -16,7 +16,7 @@ setup(
     url="https://github.com/FrancesBW/radio_cross_matching",
     long_description=['README.md'],
     packages=['functions'],
-    package_data={'functions': ['default_data/*.txt']},
+    data_files=[('functions', ['functions/default_data/*.txt']) ],
     install_requires=reqs,
     scripts=['scripts/maccas'],
     classifiers=['Programming Language :: Python :: 2.7']
