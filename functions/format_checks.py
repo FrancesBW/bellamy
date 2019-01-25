@@ -97,10 +97,13 @@ def check_column_exists(column,table,var,optional=False,length=None, variable=No
                         log.info("Went down suffix path")
                         try:
                                 if num_freq=='single':
+                                        log.info("Trying "+column+'_'+ref_freq)
                                         test=table[column+'_'+ref_freq]
                                         return test
                                 else:
                                         #interpolate the data if it falls between frequencies
+                                        log.info("Trying "+column+'_'+ref_min_freq)
+                                        log.info("Trying "+column+'_'+ref_max_freq)
                                         test_1=table[column+'_'+ref_min_freq]
                                         test_2=table[column+'_'+ref_max_freq]
                                         if error==False:
@@ -112,10 +115,13 @@ def check_column_exists(column,table,var,optional=False,length=None, variable=No
                         except KeyError:
                                 try:
                                         if num_freq=='single':
+                                                log.info("Trying "+column+ref_freq)
                                                 test=table[column+ref_freq]
                                                 return test
                                         else:
                                                 #interpolate the data if it falls between frequencies
+                                                log.info("Trying "+column+ref_min_freq)
+                                                log.info("Trying "+column+ref_max_freq)
                                                 test_1=table[column+ref_min_freq]
                                                 test_2=table[column+ref_max_freq]
                                                 if error==False:
@@ -125,14 +131,14 @@ def check_column_exists(column,table,var,optional=False,length=None, variable=No
                                                         #if it is error, apply the appropriate error propagation given the interpolation
                                                         return np.sqrt((test_1*((float(ref_max_freq)-options.tar_freq)/(float(ref_max_freq)-float(ref_min_freq))))**2+(test_2*((options.tar_freq-float(ref_min_freq))/(float(ref_max_freq)-float(ref_min_freq))))**2)
                                 except KeyError:
-                                        #if no column matching either 3 names can be found, throw we can either return no data and continue or raise a fatal error
+                                        #if no column matching either 3 names can be found, we can either return no data and continue or raise a fatal error
                                         if optional==True:
                                                 #data is not required for algorithm to proceed, so just return zeroes and log a warning
                                                 log.warning("No data found for the "+variable+" column. Margin of error will now be tighter and probability of matches will be lower.")
                                                 return np.zeros(length)
                                         else:
                                                 #data is required for algorithm to proceed, log error and exit the program
-                                                log.error("Could not find column '{0}', '{1}_{0}' or '{1}{0}'. Please edit format file to reflect catalogue column names".format(column, ref_min_freq+'/'+ref_max_freq))
+                                                log.error("Could not find column '{0}', '{0}_{1}' or '{0}{1}'. Please edit format file to reflect catalogue column names".format(column, ref_min_freq+'/'+ref_max_freq))
                                                 sys.exit(1)
                 else:
                         #This path is executed if there is no prefix or suffix to the column name and the column name by itself cannot be found
