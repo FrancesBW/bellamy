@@ -51,7 +51,7 @@ def check_column_exists(column,table,var,optional=False,length=None, variable=No
         #if it cannot be found, check if there is a frequency prefix, with or without the underscore
         except KeyError:
                 log.info("Went to first except statement")
-                if ref_p_or_s.split('\')[0]=='prefix':
+                if ref_p_or_s=='prefix':
                         log.info("Went down prefix path")
                         try:
                                 if num_freq=='single':
@@ -93,7 +93,7 @@ def check_column_exists(column,table,var,optional=False,length=None, variable=No
                                                 log.error("Could not find column '{0}', '{1}_{0}' or '{1}{0}'. Please edit format file to reflect catalogue column names".format(column, ref_min_freq+'/'+ref_max_freq))
                                                 sys.exit(1)
                 #if it cannot be found, check if there is a frequency suffix, with or without the underscore
-                elif ref_p_or_s.split('\')[0]=='suffix':
+                elif ref_p_or_s=='suffix':
                         log.info("Went down suffix path")
                         try:
                                 if num_freq=='single':
