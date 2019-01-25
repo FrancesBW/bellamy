@@ -265,6 +265,7 @@ if __name__=='__main__':
         supported_catalogues=['GLEAM','TGSS']
         #reference catalog has the possibility of single or multiple frequency, need to check the column names exist in each type of reference catalog
         if options.ref_survey_name=='GLEAM':
+                log.info("Executed the GLEAM path")
                 GLEAM_freq=['076', '084', '092', '099', '107', '115', '122', '130', '143', '151', '158', '166', '174', '181', '189', '197', '204', '212', '220', '227']
                 if options.tar_freq in np.array(GLEAM_freq, dtype=float):
                         ref_freq=GLEAM_freq[np.where(np.array(GLEAM_freq, dtype=float)==options.tar_freq)]
