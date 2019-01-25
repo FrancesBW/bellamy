@@ -164,7 +164,7 @@ def position_prob(ref_candidates, tar_candidates):
 
 
 
-def prob_comb(ref_candidates, tar_entry, confidence_percentile, flux_on ,final_run):
+def prob_comb(ref_candidates, tar_entry, confidence_percentile,single_candidate_confidence, flux_on ,final_run):
         """
         To calculate the normalised probabilty of a match on position and flux (optional) and return a confirmed match above some probability threshold.
         
@@ -212,7 +212,7 @@ def prob_comb(ref_candidates, tar_entry, confidence_percentile, flux_on ,final_r
                         return False
                         
 
-def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catalogue, confidence_percentile, snr_restriction=False, flux_match=True,final_run=False):
+def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catalogue, confidence_percentile, single_candidate_confidence, snr_restriction=False, flux_match=True,final_run=False):
         """
         Take the updated reference and target catalogues to perform a cross match within a resolution radius. Allows user to define a restriction on the SNR threshold of source, how tightly the fluxes should match and a normalisation factor for fluxes between the two catalogues.
         
@@ -358,7 +358,7 @@ def run(raw_target_table, raw_reference_table, snr_restrict,log,options):
 
         #run initial cross match
         print('Run 1')
-        cross_match_table,updated_ref_cat,updated_tar_cat,updated_tar_cat_orig_dist=cross_matching(filtered_GLEAM, raw_target_table, raw_target_table, options.multiple_match_percentile, snr_restriction=snr_restrict,flux_match=options.flux_match)
+        cross_match_table,updated_ref_cat,updated_tar_cat,updated_tar_cat_orig_dist=cross_matching(filtered_GLEAM, raw_target_table, raw_target_table, options.multiple_match_percentile, options.single_match_percentile, snr_restriction=snr_restrict,flux_match=options.flux_match)
 
         #modelling will fail if we have less than 2 points, so raise an error before scipy does
         if len(cross_match_table)<2:
@@ -376,7 +376,7 @@ def run(raw_target_table, raw_reference_table, snr_restrict,log,options):
                 print('Number of cross matches so far: '+str(len(cross_match_table)))
                 start_of_run_cross_match_num=len(cross_match_table)
                 adjusted_tar_cat=model_offsets_and_update_positions(cross_match_table,updated_tar_cat_orig_dist,count,options)
-                additional_cross_matches,updated_ref_cat,updated_tar_cat,updated_tar_cat_orig_dist=cross_matching(updated_ref_cat,adjusted_tar_cat, updated_tar_cat_orig_dist, options.multiple_match_percentile,flux_match=options.flux_match)
+                additional_cross_matches,updated_ref_cat,updated_tar_cat,updated_tar_cat_orig_dist=cross_matching(updated_ref_cat,adjusted_tar_cat, updated_tar_cat_orig_dist, options.multiple_match_percentile, options.single_match_percentile, flux_match=options.flux_match)
                 #add the new cross matches to the total table
                 cross_match_table=vstack([cross_match_table,additional_cross_matches])
                 end_of_run_cross_match_num=len(cross_match_table)
