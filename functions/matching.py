@@ -183,6 +183,8 @@ def prob_comb(ref_candidates, tar_entry, confidence_percentile,single_candidate_
                 combined_probs=pos_prob*flux_probs
         else:
                 combined_probs=pos_prob
+	if np.sum(combined_probs)==0:
+		return False
         normalisation_factor=np.sum(combined_probs)
         final_probs=combined_probs/normalisation_factor
         rounded_probs=final_probs.round(decimals=2)
