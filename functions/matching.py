@@ -188,7 +188,7 @@ def prob_comb(ref_candidates, tar_entry, confidence_percentile, flux_on ,final_r
         rounded_probs=final_probs.round(decimals=2)
         negligible_filter=np.where(rounded_probs!=0.)
         combined_probs=combined_probs[negligible_filter]
-        names=ref_candidates['Name'][negligible_filter]
+        names=ref_candidates['uuid'][negligible_filter]
         #print(Table(zip(pos_prob,flux_probs,combined_probs,final_probs),names=names))
         table=zip(names,final_probs[negligible_filter])
         probability_table=[tar_entry['uuid'],table]
