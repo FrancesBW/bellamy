@@ -263,6 +263,9 @@ if __name__=='__main__':
         tar_uuid_data=check_column_exists(tar_values[12],raw_target_table,vars_g)
                         
         supported_catalogues=['GLEAM','TGSS']
+        log.info('Name given is :'+options.ref_survey_name)
+        print(options.ref_survey_name)
+        log.info('if statement outcome is: ', options.ref_survey_name=='GLEAM')
         #reference catalog has the possibility of single or multiple frequency, need to check the column names exist in each type of reference catalog
         if options.ref_survey_name=='GLEAM':
                 log.info("Executed the GLEAM path")
