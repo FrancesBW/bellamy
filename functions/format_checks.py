@@ -40,9 +40,6 @@ def check_column_exists(column,table,var,optional=False,length=None, variable=No
         """
         #unpack var
         options, ref_min_freq, ref_max_freq, ref_p_or_s, num_freq, ref_freq,log=var
-        log.info("Column name is: "+column)
-        log.info("ref_p_or_s is: "+ref_p_or_s)
-        print(ref_p_or_s=='suffix')
         
         #first try the column name as is
         try:
@@ -50,9 +47,7 @@ def check_column_exists(column,table,var,optional=False,length=None, variable=No
                 return test
         #if it cannot be found, check if there is a frequency prefix, with or without the underscore
         except KeyError:
-                log.info("Went to first except statement")
                 if ref_p_or_s=='prefix':
-                        log.info("Went down prefix path")
                         try:
                                 if num_freq=='single':
                                         test=table[ref_freq+'_'+column]
@@ -94,16 +89,12 @@ def check_column_exists(column,table,var,optional=False,length=None, variable=No
                                                 sys.exit(1)
                 #if it cannot be found, check if there is a frequency suffix, with or without the underscore
                 elif ref_p_or_s=='suffix':
-                        log.info("Went down suffix path")
                         try:
                                 if num_freq=='single':
-                                        log.info("Trying "+column+'_'+ref_freq)
                                         test=table[column+'_'+ref_freq]
                                         return test
                                 else:
                                         #interpolate the data if it falls between frequencies
-                                        log.info("Trying "+column+'_'+ref_min_freq)
-                                        log.info("Trying "+column+'_'+ref_max_freq)
                                         test_1=table[column+'_'+ref_min_freq]
                                         test_2=table[column+'_'+ref_max_freq]
                                         if error==False:
@@ -115,13 +106,10 @@ def check_column_exists(column,table,var,optional=False,length=None, variable=No
                         except KeyError:
                                 try:
                                         if num_freq=='single':
-                                                log.info("Trying "+column+ref_freq)
                                                 test=table[column+ref_freq]
                                                 return test
                                         else:
                                                 #interpolate the data if it falls between frequencies
-                                                log.info("Trying "+column+ref_min_freq)
-                                                log.info("Trying "+column+ref_max_freq)
                                                 test_1=table[column+ref_min_freq]
                                                 test_2=table[column+ref_max_freq]
                                                 if error==False:
