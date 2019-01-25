@@ -132,6 +132,24 @@ if __name__=='__main__':
                         f.writelines(writing_format)
                 log.error("{0} cannot be read. Please fill out 'reference_catalogue_format.txt' in your working directory and call it in --refsurvey".format(ref_format_filename))
                 sys.exit(1)
+        
+        #reference catalog has the possibility of single or multiple frequency, need to check the column names exist in each type of reference catalog
+        if options.ref_survey_name=='GLEAM':
+                GLEAM_freq=['076', '084', '092', '099', '107', '115', '122', '130', '143', '151', '158', '166', '174', '181', '189', '197', '204', '212', '220', '227']
+                if options.tar_freq in np.array(GLEAM_freq, dtype=float):
+                        ref_freq=GLEAM_freq[np.where(np.array(GLEAM_freq, dtype=float)==options.tar_freq)]
+                else:
+                        above_tar_freq=np.array(GLEAM_freq)[np.where(np.array(GLEAM_freq, dtype=float)>float(options.tar_freq))]
+                        below_tar_freq=np.array(GLEAM_freq)[np.where(np.array(GLEAM_freq, dtype=float)<float(options.tar_freq))]
+                        if len(above_tar_freq)==0:
+                                ref_max_freq=GLEAM_freq[-1]
+                                ref_min_freq=GLEAM_freq[-2]
+                        elif len(below_tar_freq)==0:
+                                ref_max_freq=GLEAM_freq[1]
+                                ref_max_freq=GLEAM_freq[0]
+                        else:
+                                ref_max_freq=above_tar_freq[0]
+                                ref_min_freq=below_tar_freq[-1]
 
         #checks if the user has specified a target catalogue table format. If not go to default
         if options.tar_table_formatting_file!=None:
@@ -261,35 +279,6 @@ if __name__=='__main__':
         tar_int_flux_data=check_column_exists(tar_values[10],raw_target_table,vars_g,optional=True,length=target_table_length,variable='target integrated/total flux')
         tar_local_rms_data=check_column_exists(tar_values[11],raw_target_table,vars_g,optional=True,length=target_table_length,variable='target local rms')
         tar_uuid_data=check_column_exists(tar_values[12],raw_target_table,vars_g)
-                        
-        supported_catalogues=['GLEAM','TGSS']
-        #reference catalog has the possibility of single or multiple frequency, need to check the column names exist in each type of reference catalog
-        if options.ref_survey_name=='GLEAM':
-                log.info("Executed the GLEAM path")
-                print(type(options.tar_freq))
-                GLEAM_freq=['076', '084', '092', '099', '107', '115', '122', '130', '143', '151', '158', '166', '174', '181', '189', '197', '204', '212', '220', '227']
-                if options.tar_freq in np.array(GLEAM_freq, dtype=float):
-                        ref_freq=GLEAM_freq[np.where(np.array(GLEAM_freq, dtype=float)==options.tar_freq)]
-                else:
-                        above_tar_freq=np.array(GLEAM_freq)[np.where(np.array(GLEAM_freq, dtype=float)>float(options.tar_freq))]
-                        below_tar_freq=np.array(GLEAM_freq)[np.where(np.array(GLEAM_freq, dtype=float)<float(options.tar_freq))]
-                        print(above_tar_freq)
-                        print(below_tar_freq)
-                        if len(above_tar_freq)==0:
-                                ref_max_freq=GLEAM_freq[-1]
-                                ref_min_freq=GLEAM_freq[-2]
-                        elif len(below_tar_freq)==0:
-                                ref_max_freq=GLEAM_freq[1]
-                                ref_max_freq=GLEAM_freq[0]
-                        else:
-                                ref_max_freq=above_tar_freq[0]
-                                ref_min_freq=below_tar_freq[-1]
-                        print(ref_max_freq, ref_min_freq)
-        #bring the global variables in before running an external function
-        if num_freq=='single':
-                vars_g=[ options, None, None, ref_p_or_s, num_freq, ref_freq,log]
-        else:
-                vars_g=[ options, ref_min_freq, ref_max_freq, ref_p_or_s, num_freq,None,log]
         
         #reference catalog checking        
         for item in ref_values[:2]:
@@ -319,7 +308,7 @@ if __name__=='__main__':
                 ref_local_rms_data=check_column_exists(ref_values[11],raw_reference_table,vars_g)
         else:
                 ref_local_rms_data=check_column_exists(ref_values[11],raw_reference_table,vars_g,optional=True,length=reference_table_length,variable='reference local rms')
-        ref_uuid_data=check_column_exists(ref_values[12],raw_reference_table)
+        ref_uuid_data=check_column_exists(ref_values[12],raw_reference_table,vars_g)
         
         #Finally we want to create Table objects for the reference and target catalogues for the other modules to easily use and reference
         raw_target_catalog=Table([tar_ra_data,tar_dec_data,tar_err_ra_data,tar_err_dec_data,tar_psf_a_data,tar_psf_b_data,tar_a_data,tar_b_data,tar_peak_flux_data,tar_err_peak_flux_data,tar_int_flux_data,tar_local_rms_data,tar_uuid_data],names=('ra','dec','err_ra','err_dec','psf_a','psf_b','a','b','peak_flux','err_peak_flux','int_flux','local_rms','uuid'))
