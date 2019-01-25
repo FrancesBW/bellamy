@@ -267,7 +267,7 @@ def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catal
                                 ref_uuid=match[1]
                                 target_entry=original_dist_tar_catalogue[np.where(original_dist_tar_catalogue['uuid']==tar_uuid)]
                                 reference_entry_idx=np.where(ref_catalogue['uuid']==ref_uuid)
-                                cross_matched_table.add_row((target_entry['ra'],target_entry['dec'],target_entry['a'],target_entry['b'],target_entry['pa'],target_entry['peak_flux'],ref_catalogue['ra'][reference_entry_idx],ref_catalogue['dec'][reference_entry_idx],ref_catalogue['a'][reference_entry_idx],ref_catalogue['b'][reference_entry_idx],ref_catalogue['pa'][reference_entry_idx],ref_catalogue['peak_flux'],target_entry['uuid'],ref_catalogue['uuid'][reference_entry_idx],match[2],match[3],match[4]))
+                                cross_matched_table.add_row((target_entry['ra'],target_entry['dec'],target_entry['a'],target_entry['b'],target_entry['pa'],target_entry['peak_flux'],ref_catalogue['ra'][reference_entry_idx],ref_catalogue['dec'][reference_entry_idx],ref_catalogue['a'][reference_entry_idx],ref_catalogue['b'][reference_entry_idx],ref_catalogue['pa'][reference_entry_idx],ref_catalogue['peak_flux'][reference_entry_idx],target_entry['uuid'],ref_catalogue['uuid'][reference_entry_idx],match[2],match[3],match[4]))
                                 ref_cat_uuid.append(ref_uuid)
                                 tar_cat_uuid.append(tar_uuid)
                                 
