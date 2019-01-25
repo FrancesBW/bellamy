@@ -263,7 +263,7 @@ def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catal
         for item in tar_cat_for_prob:
                 if np.any(np.isin(tar_cat_uuid,item['uuid']))==False:
                         reference_matches=ref_cat_matched_within_resolution[np.where(tar_cat_for_prob['uuid']==item['uuid'])]
-                        match=prob_comb(reference_matches, item, confidence_percentile, flux_match,final_run)
+                        match=prob_comb(reference_matches, item, confidence_percentile, single_candidate_confidence, flux_match,final_run)
                         if match!=False:
                                 tar_uuid=match[0]
                                 ref_uuid=match[1]
