@@ -111,7 +111,7 @@ if __name__=='__main__':
         #read in the reference survey file format
         ref_required_format=['RA_name','DEC_name','RA_error_name','DEC_error_name','PSF_semimajor_axis_name','PSF_semiminor_axis_name','source_semimajor_axis_name','source_semiminor_axis_name','peak_flux_name','peak_flux_error_name','integrated_flux_name','local_rms_name','unique_identifier_name','frequency','frequency_prefix_or_suffix']
         with open(ref_format_filename) as f:
-                inputs = [line.rstrip('\n') for line in f][:15]
+                inputs = [line.rstrip('\n').rstrip('\r') for line in f][:15]
         ref_values=[line.split('=')[1] for line in inputs]
         if [line.split('=')[0] for line in inputs]==ref_required_format:
                 ref_ra, ref_dec, ref_err_ra, ref_err_dec, ref_psf_a, ref_psf_b, ref_a, ref_b, ref_peak_flux, ref_err_peak_flux, ref_int_flux,ref_local_rms, ref_uuid=ref_values[:13]
@@ -144,7 +144,7 @@ if __name__=='__main__':
         #read in the target survey file format
         tar_required_format=['RA_name','DEC_name','RA_error_name','DEC_error_name','PSF_semimajor_axis_name','PSF_semiminor_axis_name','source_semimajor_axis_name','source_semiminor_axis_name','peak_flux_name','peak_flux_error_name','integrated_flux_name','local_rms_name','unique_identifier_name']
         with open(data_dir+tar_format_filename) as f:
-                inputs = [line.rstrip('\n') for line in f][:13]
+                inputs = [line.rstrip('\n').rstrip('\r') for line in f][:13]
         tar_values=[line.split('=')[1] for line in inputs]
         if [line.split('=')[0] for line in inputs]==tar_required_format:
                 tar_ra, tar_dec, tar_err_ra, tar_err_dec, tar_psf_a, tar_psf_b, tar_a, tar_b, tar_peak_flux, tar_err_peak_flux, tar_int_flux, tar_local_rms, tar_uuid=tar_values
