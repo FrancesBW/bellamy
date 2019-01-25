@@ -60,7 +60,7 @@ if __name__=='__main__':
         options = parser.parse_args()
 
         #set up logging
-        FORMAT = '%(asctime)-10s MACCAS  %(message)s'
+        FORMAT = '%(asctime) MACCAS  %(message)s'
         logging.basicConfig(format=FORMAT)
         log=logging.getLogger("MACCAS")
         logging_level = logging.DEBUG if options.debug else logging.INFO
@@ -315,8 +315,5 @@ if __name__=='__main__':
         #Finally we want to create Table objects for the reference and target catalogues for the other modules to easily use and reference
         raw_target_catalog=Table([tar_ra_data,tar_dec_data,tar_err_ra_data,tar_err_dec_data,tar_psf_a_data,tar_psf_b_data,tar_a_data,tar_b_data,tar_pa_data,tar_peak_flux_data,tar_err_peak_flux_data,tar_int_flux_data,tar_local_rms_data,tar_uuid_data],names=('ra','dec','err_ra','err_dec','psf_a','psf_b','a','b','pa','peak_flux','err_peak_flux','int_flux','local_rms','uuid'))
         raw_reference_catalog=Table([ref_ra_data,ref_dec_data,ref_err_ra_data,ref_err_dec_data,ref_psf_a_data,ref_psf_b_data,ref_a_data,ref_b_data,ref_pa_data,ref_peak_flux_data,ref_err_peak_flux_data,ref_int_flux_data,ref_local_rms_data,ref_uuid_data],names=('ra','dec','err_ra','err_dec','psf_a','psf_b','a','b','pa','peak_flux','err_peak_flux','int_flux','local_rms','uuid'))
-        
-        raw_target_catalog.write('raw_target_catalog.fits', format='fits',overwrite=True)
-        raw_reference_catalog.write('raw_reference_catalog.fits', format='fits',overwrite=True)
         
         run(raw_target_catalog, raw_reference_catalog, snr_restrict,log,options)
