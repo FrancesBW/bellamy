@@ -49,6 +49,7 @@ def check_column_exists(column,table,var,optional=False,length=None, variable=No
                 return test
         #if it cannot be found, check if there is a frequency prefix, with or without the underscore
         except KeyError:
+                log.info("Went to first except statement")
                 if ref_p_or_s=='prefix':
                         log.info("Went down prefix path")
                         try:
