@@ -61,7 +61,7 @@ def reference_pre_filter(target_catalog, reference_catalog, target_freq=None, re
 
 
 
-def model_offsets_and_update_positions(cross_matched_catalogue,target_catalogue,run_num, ref_ra_column='ref_ra', ref_dec_column='ref_dec', tar_ra_column='tar_ra', tar_dec_column='tar_dec'):
+def model_offsets_and_update_positions(cross_matched_catalogue,target_catalogue,run_num, options, ref_ra_column='ref_ra', ref_dec_column='ref_dec', tar_ra_column='tar_ra', tar_dec_column='tar_dec'):
         """
         Read in the cross matched catalogue and model the measured offsets.
         
@@ -288,7 +288,7 @@ def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catal
         
         return cross_matched_table, new_ref_catalogue, new_tar_catalogue, new_original_dist_tar_catalogue
 
-def flux_model(raw_tar_catalogue,filtered_ref_catalogue):
+def flux_model(raw_tar_catalogue,filtered_ref_catalogue,options):
         """
         Take the raw target and reference catalogue, do a quick and dirty cross match of the two with only high snr (10) target sources. Construct a 2D polynomial model of the flux correction factor across the field of sources.
         
@@ -351,7 +351,7 @@ def run(raw_target_table, raw_reference_table, snr_restrict,log,options):
         model_flux=options.model_flux
 
         if model_flux==True:
-                model=flux_model(raw_target_table,filtered_GLEAM)
+                model=flux_model(raw_target_table,filtered_GLEAM,options)
                 raw_target_table['peak_flux']=raw_target_table['peak_flux']/model.ev(raw_target_table['ra'],raw_target_table['dec'])
                 raw_target_table['err_peak_flux']=raw_target_table['err_peak_flux']/model.ev(raw_target_table['ra'],raw_target_table['dec'])
                 del(model)
@@ -375,7 +375,7 @@ def run(raw_target_table, raw_reference_table, snr_restrict,log,options):
                 print('Run '+str(count+1))
                 print('Number of cross matches so far: '+str(len(cross_match_table)))
                 start_of_run_cross_match_num=len(cross_match_table)
-                adjusted_tar_cat=model_offsets_and_update_positions(cross_match_table,updated_tar_cat_orig_dist,count)
+                adjusted_tar_cat=model_offsets_and_update_positions(cross_match_table,updated_tar_cat_orig_dist,count,options)
                 additional_cross_matches,updated_ref_cat,updated_tar_cat,updated_tar_cat_orig_dist=cross_matching(updated_ref_cat,adjusted_tar_cat, updated_tar_cat_orig_dist, options.multiple_match_percentile,flux_match=options.flux_match)
                 #add the new cross matches to the total table
                 cross_match_table=vstack([cross_match_table,additional_cross_matches])
