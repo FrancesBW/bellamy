@@ -41,6 +41,7 @@ def check_column_exists(column,table,var,optional=False,length=None, variable=No
         #unpack var
         options, ref_min_freq, ref_max_freq, ref_p_or_s, num_freq, ref_freq,log=var
         log.info("Column name is: "+column)
+        log.info("ref_p_or_s is: "+ref_p_or_s)
         
         #first try the column name as is
         try:
