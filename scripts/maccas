@@ -169,7 +169,7 @@ if __name__=='__main__':
         else:
                 writing_format=[]
                 for i in range(0,14):
-                        writing_format.append(required_format[i]+'=\n')
+                        writing_format.append(tar_required_format[i]+'=\n')
                 with open('reference_catalogue_format.txt', 'w') as f: 
                         f.writelines(writing_format)
 
