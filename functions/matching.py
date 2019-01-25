@@ -192,8 +192,6 @@ def prob_comb(ref_candidates, tar_entry, confidence_percentile,single_candidate_
         #print(Table(zip(pos_prob,flux_probs,combined_probs,final_probs),names=names))
         table=zip(names,final_probs[negligible_filter])
         probability_table=[tar_entry['uuid'],table]
-
-        single_candidate_confidence=g_single_match_percentile
         
         if final_run==True:
                 confidence_percentile=0.0
