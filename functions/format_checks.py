@@ -92,7 +92,6 @@ def check_column_exists(column,table,var,optional=False,length=None, variable=No
                 #if it cannot be found, check if there is a frequency suffix, with or without the underscore
                 elif ref_p_or_s=='suffix':
                         log.info("Went down suffix path")
-                        log.info("
                         try:
                                 if num_freq=='single':
                                         test=table[column+'_'+ref_freq]
