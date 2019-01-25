@@ -335,7 +335,7 @@ def flux_model(raw_tar_catalogue,filtered_ref_catalogue):
                 plt.close()
         return resulting_model
 
-def run(raw_target_catalog, raw_reference_catalog, snr_restrict,log):
+def run(raw_target_table, raw_reference_table, snr_restrict,log):
         """
         Main algorithm to run the iterations of cross matching. Takes no arguments, uses global variables only.
 
