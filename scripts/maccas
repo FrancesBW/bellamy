@@ -109,24 +109,24 @@ if __name__=='__main__':
                 sys.exit(1)
 
         #read in the reference survey file format
-        ref_required_format=['RA_name','DEC_name','RA_error_name','DEC_error_name','PSF_semimajor_axis_name','PSF_semiminor_axis_name','source_semimajor_axis_name','source_semiminor_axis_name','peak_flux_name','peak_flux_error_name','integrated_flux_name','local_rms_name','unique_identifier_name','frequency','frequency_prefix_or_suffix']
+        ref_required_format=['RA_name','DEC_name','RA_error_name','DEC_error_name','PSF_semimajor_axis_name','PSF_semiminor_axis_name','source_semimajor_axis_name','source_semiminor_axis_name','source_position_angle_name','peak_flux_name','peak_flux_error_name','integrated_flux_name','local_rms_name','unique_identifier_name','frequency','frequency_prefix_or_suffix']
         with open(ref_format_filename) as f:
-                inputs = [line.rstrip('\n').rstrip('\r') for line in f][:15]
+                inputs = [line.rstrip('\n').rstrip('\r') for line in f][:16]
         ref_values=[line.split('=')[1] for line in inputs]
         if [line.split('=')[0] for line in inputs]==ref_required_format:
-                ref_ra, ref_dec, ref_err_ra, ref_err_dec, ref_psf_a, ref_psf_b, ref_a, ref_b, ref_peak_flux, ref_err_peak_flux, ref_int_flux,ref_local_rms, ref_uuid=ref_values[:13]
-                if '-' in ref_values[13]:
-                        ref_min_freq=ref_values[13].split('-')[0]
-                        ref_max_freq=ref_values[13].split('-')[1]
-                        ref_p_or_s=ref_values[14]
+                ref_ra, ref_dec, ref_err_ra, ref_err_dec, ref_psf_a, ref_psf_b, ref_a, ref_b, ref_pa,ref_peak_flux, ref_err_peak_flux, ref_int_flux,ref_local_rms, ref_uuid=ref_values[:14]
+                if '-' in ref_values[14]:
+                        ref_min_freq=ref_values[14].split('-')[0]
+                        ref_max_freq=ref_values[14].split('-')[1]
+                        ref_p_or_s=ref_values[15]
                         num_freq='multiple'
                 else:
-                        ref_freq=ref_values[13]
+                        ref_freq=ref_values[14]
                         ref_p_or_s=''
                         num_freq='single'
         else:
                 writing_format=[]
-                for i in range(0,15):
+                for i in range(0,16):
                         writing_format.append(ref_required_format[i]+'=\n')
                 with open('reference_catalogue_format.txt', 'w') as f: 
                         f.writelines(writing_format)
@@ -160,15 +160,15 @@ if __name__=='__main__':
                 log.info("Default target catalogue format used")
 
         #read in the target survey file format
-        tar_required_format=['RA_name','DEC_name','RA_error_name','DEC_error_name','PSF_semimajor_axis_name','PSF_semiminor_axis_name','source_semimajor_axis_name','source_semiminor_axis_name','peak_flux_name','peak_flux_error_name','integrated_flux_name','local_rms_name','unique_identifier_name']
+        tar_required_format=['RA_name','DEC_name','RA_error_name','DEC_error_name','PSF_semimajor_axis_name','PSF_semiminor_axis_name','source_semimajor_axis_name','source_semiminor_axis_name','source_position_angle_name','peak_flux_name','peak_flux_error_name','integrated_flux_name','local_rms_name','unique_identifier_name']
         with open(data_dir+tar_format_filename) as f:
-                inputs = [line.rstrip('\n').rstrip('\r') for line in f][:13]
+                inputs = [line.rstrip('\n').rstrip('\r') for line in f][:14]
         tar_values=[line.split('=')[1] for line in inputs]
         if [line.split('=')[0] for line in inputs]==tar_required_format:
-                tar_ra, tar_dec, tar_err_ra, tar_err_dec, tar_psf_a, tar_psf_b, tar_a, tar_b, tar_peak_flux, tar_err_peak_flux, tar_int_flux, tar_local_rms, tar_uuid=tar_values
+                tar_ra, tar_dec, tar_err_ra, tar_err_dec, tar_psf_a, tar_psf_b, tar_a, tar_b, tar_pa, tar_peak_flux, tar_err_peak_flux, tar_int_flux, tar_local_rms, tar_uuid=tar_values
         else:
                 writing_format=[]
-                for i in range(0,13):
+                for i in range(0,14):
                         writing_format.append(required_format[i]+'=\n')
                 with open('reference_catalogue_format.txt', 'w') as f: 
                         f.writelines(writing_format)
@@ -273,12 +273,13 @@ if __name__=='__main__':
         tar_psf_a_data=check_column_exists(tar_values[4],raw_target_table,vars_g,optional=True,length=target_table_length,variable='target psf a')
         tar_psf_b_data=check_column_exists(tar_values[5],raw_target_table,vars_g,optional=True,length=target_table_length,variable='target psf b')
         tar_a_data=check_column_exists(tar_values[6],raw_target_table,vars_g,optional=True,length=target_table_length,variable='target a')
-        tar_b_data=check_column_exists(ref_values[7],raw_target_table,vars_g,optional=True,length=target_table_length,variable='target b')
-        tar_peak_flux_data=check_column_exists(ref_values[8],raw_target_table,vars_g)
-        tar_err_peak_flux_data=check_column_exists(tar_values[9],raw_target_table,vars_g,optional=True,length=target_table_length,variable='target error peak flux',error=True)
-        tar_int_flux_data=check_column_exists(tar_values[10],raw_target_table,vars_g,optional=True,length=target_table_length,variable='target integrated/total flux')
-        tar_local_rms_data=check_column_exists(tar_values[11],raw_target_table,vars_g,optional=True,length=target_table_length,variable='target local rms')
-        tar_uuid_data=check_column_exists(tar_values[12],raw_target_table,vars_g)
+        tar_b_data=check_column_exists(tar_values[7],raw_target_table,vars_g,optional=True,length=target_table_length,variable='target b')
+        tar_pa_data=check_column_exists(tar_values[8],raw_target_table,vars_g,optional=True,length=target_table_length,variable='target pa')
+        tar_peak_flux_data=check_column_exists(tar_values[9],raw_target_table,vars_g)
+        tar_err_peak_flux_data=check_column_exists(tar_values[10],raw_target_table,vars_g,optional=True,length=target_table_length,variable='target error peak flux',error=True)
+        tar_int_flux_data=check_column_exists(tar_values[11],raw_target_table,vars_g,optional=True,length=target_table_length,variable='target integrated/total flux')
+        tar_local_rms_data=check_column_exists(tar_values[12],raw_target_table,vars_g,optional=True,length=target_table_length,variable='target local rms')
+        tar_uuid_data=check_column_exists(tar_values[13],raw_target_table,vars_g)
         
         #reference catalog checking        
         for item in ref_values[:2]:
@@ -300,18 +301,19 @@ if __name__=='__main__':
                 ref_psf_b_data=check_column_exists(ref_values[5],raw_reference_table,vars_g,optional=True,length=reference_table_length,variable='reference psf b')
         ref_a_data=check_column_exists(ref_values[6],raw_reference_table,vars_g,optional=True,length=reference_table_length,variable='reference a')
         ref_b_data=check_column_exists(ref_values[7],raw_reference_table,vars_g,optional=True,length=reference_table_length,variable='reference b')
-        ref_peak_flux_data=check_column_exists(ref_values[8],raw_reference_table,vars_g)
-        ref_err_peak_flux_data=check_column_exists(ref_values[9],raw_reference_table,vars_g,optional=True,length=reference_table_length,variable='reference error peak flux',error=True)
-        ref_int_flux_data=check_column_exists(ref_values[10],raw_reference_table,vars_g,optional=True,length=reference_table_length,variable='reference integrated/total flux')
+        ref_pa_data=check_column_exists(ref_values[8],raw_reference_table,vars_g,optional=True,length=reference_table_length,variable='reference pa')
+        ref_peak_flux_data=check_column_exists(ref_values[9],raw_reference_table,vars_g)
+        ref_err_peak_flux_data=check_column_exists(ref_values[10],raw_reference_table,vars_g,optional=True,length=reference_table_length,variable='reference error peak flux',error=True)
+        ref_int_flux_data=check_column_exists(ref_values[11],raw_reference_table,vars_g,optional=True,length=reference_table_length,variable='reference integrated/total flux')
         #again, if the other columns have no data, this one must, so it cannot be optional
         if np.sum([tar_err_peak_flux_data,tar_local_rms_data])+np.sum([ref_err_peak_flux_data])==0:
-                ref_local_rms_data=check_column_exists(ref_values[11],raw_reference_table,vars_g)
+                ref_local_rms_data=check_column_exists(ref_values[12],raw_reference_table,vars_g)
         else:
-                ref_local_rms_data=check_column_exists(ref_values[11],raw_reference_table,vars_g,optional=True,length=reference_table_length,variable='reference local rms')
-        ref_uuid_data=check_column_exists(ref_values[12],raw_reference_table,vars_g)
+                ref_local_rms_data=check_column_exists(ref_values[12],raw_reference_table,vars_g,optional=True,length=reference_table_length,variable='reference local rms')
+        ref_uuid_data=check_column_exists(ref_values[13],raw_reference_table,vars_g)
         
         #Finally we want to create Table objects for the reference and target catalogues for the other modules to easily use and reference
-        raw_target_catalog=Table([tar_ra_data,tar_dec_data,tar_err_ra_data,tar_err_dec_data,tar_psf_a_data,tar_psf_b_data,tar_a_data,tar_b_data,tar_peak_flux_data,tar_err_peak_flux_data,tar_int_flux_data,tar_local_rms_data,tar_uuid_data],names=('ra','dec','err_ra','err_dec','psf_a','psf_b','a','b','peak_flux','err_peak_flux','int_flux','local_rms','uuid'))
-        raw_reference_catalog=Table([ref_ra_data,ref_dec_data,ref_err_ra_data,ref_err_dec_data,ref_psf_a_data,ref_psf_b_data,ref_a_data,ref_b_data,ref_peak_flux_data,ref_err_peak_flux_data,ref_int_flux_data,ref_local_rms_data,ref_uuid_data],names=('ra','dec','err_ra','err_dec','psf_a','psf_b','a','b','peak_flux','err_peak_flux','int_flux','local_rms','uuid'))
+        raw_target_catalog=Table([tar_ra_data,tar_dec_data,tar_err_ra_data,tar_err_dec_data,tar_psf_a_data,tar_psf_b_data,tar_a_data,tar_b_data,tar_pa_data,tar_peak_flux_data,tar_err_peak_flux_data,tar_int_flux_data,tar_local_rms_data,tar_uuid_data],names=('ra','dec','err_ra','err_dec','psf_a','psf_b','a','b','pa','peak_flux','err_peak_flux','int_flux','local_rms','uuid'))
+        raw_reference_catalog=Table([ref_ra_data,ref_dec_data,ref_err_ra_data,ref_err_dec_data,ref_psf_a_data,ref_psf_b_data,ref_a_data,ref_b_data,ref_pa_data,ref_peak_flux_data,ref_err_peak_flux_data,ref_int_flux_data,ref_local_rms_data,ref_uuid_data],names=('ra','dec','err_ra','err_dec','psf_a','psf_b','a','b','pa','peak_flux','err_peak_flux','int_flux','local_rms','uuid'))
         
         run(raw_target_catalog, raw_reference_catalog, snr_restrict,log,options)
