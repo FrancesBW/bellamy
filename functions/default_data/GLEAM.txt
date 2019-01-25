@@ -6,6 +6,7 @@ PSF_semimajor_axis_name=psf_a
 PSF_semiminor_axis_name=psf_a
 source_semimajor_axis_name=a
 source_semiminor_axis_name=b
+source_position_angle_name=pa
 peak_flux_name=peak_flux
 peak_flux_error_name=err_peak_flux
 integrated_flux_name=int_flux
