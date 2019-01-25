@@ -284,7 +284,14 @@ if __name__=='__main__':
                         else:
                                 ref_max_freq=above_tar_freq[0]
                                 ref_min_freq=below_tar_freq[-1]
-                
+                        print(ref_max_freq, ref_min_freq)
+        #bring the global variables in before running an external function
+        if num_freq=='single':
+                vars_g=[ options, None, None, ref_p_or_s, num_freq, ref_freq,log]
+        else:
+                vars_g=[ options, ref_min_freq, ref_max_freq, ref_p_or_s, num_freq,None,log]
+        
+        #reference catalog checking        
         for item in ref_values[:2]:
                 try:
                         test=raw_reference_table[item]
