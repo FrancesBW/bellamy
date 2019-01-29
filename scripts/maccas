@@ -110,11 +110,21 @@ if __name__=='__main__':
                 sys.exit(1)
 
         #checks the user has specified reference survey table format. If not, raise a fatal error
+        ref_required_format=['RA_name','DEC_name','RA_error_name','DEC_error_name','PSF_semimajor_axis_name','PSF_semiminor_axis_name','source_semimajor_axis_name','source_semiminor_axis_name','source_position_angle_name','peak_flux_name','peak_flux_error_name','integrated_flux_name','local_rms_name','unique_identifier_name','frequency','frequency_prefix_or_suffix']
         if options.ref_survey_name!=None:
                 if options.ref_survey_name.split('.')[-1]=='txt':
                         with open(options.ref_survey_name) as f:
                                 inputs = [line.rstrip('\n').rstrip('\r') for line in f][:16]
-                                ref_values=[line.split('=')[1].strip(' ') for line in inputs]
+                                if [line.split('=')[0] for line in inputs]==ref_required_format:
+                                        ref_values=[line.split('=')[1].strip(' ') for line in inputs]
+                                else:
+                                        writing_format=[]
+                                        for i in range(0,16):
+                                                writing_format.append(ref_required_format[i]+'=\n')
+                                        with open('reference_catalogue_format.txt', 'w') as f: 
+                                                f.writelines(writing_format)
+                                        log.error("{0} cannot be read. Please fill out 'reference_catalogue_format.txt' in your working directory and call it in --refsurvey".format(ref_format_filename))
+                                        sys.exit(1)
                         log.info("Reference catalogue format used: {0}".format(ref_format_filename.split('/')[-1]))
                 elif options.ref_survey_name=='GLEAM':
                         ref_values=GLEAM()
@@ -123,57 +133,49 @@ if __name__=='__main__':
                         ref_values=TGSS()
                         log.info("Reference catalogue format used: {0}".format(options.ref_survey_name))
                 else:
-                        log.error("Could not read {0}. Please choose from 'GLEAM', 'TGSS' or specify file name for alternate table format.".format(options.ref_survey_name.split('/')[-1]))
+                        writing_format=[]
+                        for i in range(0,16):
+                                 writing_format.append(ref_required_format[i]+'=\n')
+                        with open('reference_catalogue_format.txt', 'w') as f: 
+                                f.writelines(writing_format)
+                        log.error("{0} cannot be read. Please fill out 'reference_catalogue_format.txt' in your working directory and call it in --refsurvey".format(ref_format_filename))
                         sys.exit(1)
         else:
                 log.error("No reference catalogue table format supplied. Please choose from 'GLEAM', 'TGSS' or specify file name for alternate table format.")
                 sys.exit(1)
 
         #read in the reference survey file format
-        ref_required_format=['RA_name','DEC_name','RA_error_name','DEC_error_name','PSF_semimajor_axis_name','PSF_semiminor_axis_name','source_semimajor_axis_name','source_semiminor_axis_name','source_position_angle_name','peak_flux_name','peak_flux_error_name','integrated_flux_name','local_rms_name','unique_identifier_name','frequency','frequency_prefix_or_suffix']
-        if [line.split('=')[0] for line in inputs]==ref_required_format:
-                ref_ra, ref_dec, ref_err_ra, ref_err_dec, ref_psf_a, ref_psf_b, ref_a, ref_b, ref_pa,ref_peak_flux, ref_err_peak_flux, ref_int_flux,ref_local_rms, ref_uuid=ref_values[:14]
-                if '-' in ref_values[14]:
-                        ref_min_freq=ref_values[14].split('-')[0]
-                        ref_max_freq=ref_values[14].split('-')[1]
-                        ref_p_or_s=ref_values[15]
-                        num_freq='multiple'
-                else:
-                        ref_freq=ref_values[14]
-                        ref_p_or_s=''
-                        num_freq='single'
+        ref_ra, ref_dec, ref_err_ra, ref_err_dec, ref_psf_a, ref_psf_b, ref_a, ref_b, ref_pa,ref_peak_flux, ref_err_peak_flux, ref_int_flux,ref_local_rms, ref_uuid=ref_values[:14]
+        if '-' in ref_values[14]:
+                ref_min_freq=ref_values[14].split('-')[0]
+                ref_max_freq=ref_values[14].split('-')[1]
+                ref_p_or_s=ref_values[15]
+                num_freq='multiple'
         else:
-                writing_format=[]
-                for i in range(0,16):
-                        writing_format.append(ref_required_format[i]+'=\n')
-                with open('reference_catalogue_format.txt', 'w') as f: 
-                        f.writelines(writing_format)
-                log.error("{0} cannot be read. Please fill out 'reference_catalogue_format.txt' in your working directory and call it in --refsurvey".format(ref_format_filename))
-                sys.exit(1)
+                ref_freq=ref_values[14]
+                ref_p_or_s=''
+                num_freq='single'                
 
         #checks if the user has specified a target catalogue table format. If not go to default
+        tar_required_format=['RA_name','DEC_name','RA_error_name','DEC_error_name','PSF_semimajor_axis_name','PSF_semiminor_axis_name','source_semimajor_axis_name','source_semiminor_axis_name','source_position_angle_name','peak_flux_name','peak_flux_error_name','integrated_flux_name','local_rms_name','unique_identifier_name']
         if options.tar_table_formatting_file!=None:
                 with open(options.tar_table_formatting_file) as f:
                         inputs = [line.rstrip('\n').rstrip('\r') for line in f][:14]
-                        tar_values=[line.split('=')[1].strip(' ') for line in inputs]
+                        if [line.split('=')[0] for line in inputs]==tar_required_format:
+                                tar_values=[line.split('=')[1].strip(' ') for line in inputs]
+                                tar_ra, tar_dec, tar_err_ra, tar_err_dec, tar_psf_a, tar_psf_b, tar_a, tar_b, tar_pa, tar_peak_flux, tar_err_peak_flux, tar_int_flux, tar_local_rms, tar_uuid=tar_values
+                        else:
+                                writing_format=[]
+                                for i in range(0,14):
+                                        writing_format.append(tar_required_format[i]+'=\n')
+                                with open('target_catalogue_format.txt', 'w') as f: 
+                                        f.writelines(writing_format)
+                                log.error("{0} cannot be read. Please fill out 'target_catalogue_format.txt' in your working directory and call it in --tarformat".format(tar_format_filename.split('/')[-1]))
+                                sys.exit(1)
                 log.info("Target catalogue format used: {0}".format(tar_format_filename.split('/')[-1]))
         else:
                 tar_values=target_default()
                 log.info("Default target catalogue format used")
-
-        #read in the target survey file format
-        tar_required_format=['RA_name','DEC_name','RA_error_name','DEC_error_name','PSF_semimajor_axis_name','PSF_semiminor_axis_name','source_semimajor_axis_name','source_semiminor_axis_name','source_position_angle_name','peak_flux_name','peak_flux_error_name','integrated_flux_name','local_rms_name','unique_identifier_name']
-        
-        if [line.split('=')[0] for line in inputs]==tar_required_format:
-                tar_ra, tar_dec, tar_err_ra, tar_err_dec, tar_psf_a, tar_psf_b, tar_a, tar_b, tar_pa, tar_peak_flux, tar_err_peak_flux, tar_int_flux, tar_local_rms, tar_uuid=tar_values
-        else:
-                writing_format=[]
-                for i in range(0,14):
-                        writing_format.append(tar_required_format[i]+'=\n')
-                with open('target_catalogue_format.txt', 'w') as f: 
-                        f.writelines(writing_format)
-                log.error("{0} cannot be read. Please fill out 'target_catalogue_format.txt' in your working directory and call it in --tarformat".format(tar_format_filename.split('/')[-1]))
-                sys.exit(1)
 
         #apply all the run settings
         if options.snr_init_restrict:
