@@ -379,6 +379,8 @@ def run(raw_target_table, raw_reference_table, snr_restrict,log,options):
                 additional_cross_matches,updated_ref_cat,updated_tar_cat,updated_tar_cat_orig_dist=cross_matching(updated_ref_cat,adjusted_tar_cat, updated_tar_cat_orig_dist, options.multiple_match_percentile, options.single_match_percentile, flux_match=options.flux_match)
                 #add the new cross matches to the total table
                 cross_match_table=vstack([cross_match_table,additional_cross_matches])
+		print("Minimum accepted combined probability: "+np.min(cross_match_table['norm_prob']))
+		print('Minimum accepted raw probability: '+np.min(cross_match_table[np.where(cross_match_table['num_of_candidates']==1)]['raw_prob']))
                 end_of_run_cross_match_num=len(cross_match_table)
                 if end_of_run_cross_match_num==start_of_run_cross_match_num:
                         less_certain_cross_matches,updated_ref_cat,updated_tar_cat,updated_tar_cat_orig_dist=cross_matching(updated_ref_cat,adjusted_tar_cat, updated_tar_cat_orig_dist, options.multiple_match_percentile, options.single_match_percentile, flux_match=options.flux_match,final_run=True)
