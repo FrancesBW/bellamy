@@ -281,7 +281,7 @@ if __name__=='__main__':
         tar_peak_flux_data=check_column_exists(tar_values[9],raw_target_table,vars_g)
         tar_err_peak_flux_data=check_column_exists(tar_values[10],raw_target_table,vars_g,optional=True,length=target_table_length,variable='target error peak flux',error=True)
         tar_int_flux_data=check_column_exists(tar_values[11],raw_target_table,vars_g,optional=True,length=target_table_length,variable='target integrated/total flux')
-        if snr_restrict==False and options.model_flux==False:
+        if snr_restrict!=False or options.model_flux==True:
                 tar_local_rms_data=check_column_exists(tar_values[12],raw_target_table,vars_g)
         else:
                 tar_local_rms_data=check_column_exists(tar_values[12],raw_target_table,vars_g,optional=True,length=target_table_length,variable='target local rms')
