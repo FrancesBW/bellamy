@@ -208,8 +208,8 @@ if __name__=='__main__':
                 GLEAM_freq=['076', '084', '092', '099', '107', '115', '122', '130', '143', '151', '158', '166', '174', '181', '189', '197', '204', '212', '220', '227']
                 if options.tar_freq in np.array(GLEAM_freq, dtype=float):
                         ref_freq=np.array(GLEAM_freq)[np.where(np.array(GLEAM_freq, dtype=float)==options.tar_freq)]
-                        ref_max_freq=ref_freq
-                        ref_min_freq=ref_freq
+                        ref_max_freq=ref_freq[0]
+                        ref_min_freq=ref_freq[0]
                 else:
                         above_tar_freq=np.array(GLEAM_freq)[np.where(np.array(GLEAM_freq, dtype=float)>float(options.tar_freq))]
                         below_tar_freq=np.array(GLEAM_freq)[np.where(np.array(GLEAM_freq, dtype=float)<float(options.tar_freq))]
