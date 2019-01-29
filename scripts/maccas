@@ -73,7 +73,7 @@ if __name__=='__main__':
                 t=datetime.datetime.now()
                 suffix=str(t.day)+"-"+str(t.month)+"-"+str(t.year)+"_"+str(t.hour)+"-"+str(t.minute)+"-"+str(t.second)
                 formatter=logging.Formatter(FORMAT,datefmt='%d/%m/%Y %H:%M:%S')
-                fh=logging.FileHandler('test_log_'+suffix+'.log')
+                fh=logging.FileHandler('maccas_log_'+suffix+'.log')
                 fh.setLevel(logging.DEBUG)
                 fh.setFormatter(formatter)
                 log.addHandler(fh)
