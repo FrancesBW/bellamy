@@ -213,7 +213,7 @@ def prob_comb(ref_candidates, tar_entry, confidence_percentile,single_candidate_
                         return False
                         
 
-def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catalogue, confidence_percentile, single_candidate_confidence, snr_restriction=False, flux_match=True,final_run=False):
+def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catalogue, confidence_percentile, single_candidate_confidence, log,snr_restriction=False, flux_match=True,final_run=False):
         """
         Take the updated reference and target catalogues to perform a cross match within a resolution radius. Allows user to define a restriction on the SNR threshold of source, how tightly the fluxes should match and a normalisation factor for fluxes between the two catalogues.
         
@@ -230,9 +230,9 @@ def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catal
         """
         
         if final_run==True:
-                print('Returning most likely match to remaining '+str(len(pre_snr_tar_catalogue))+' unmatched sources')
+                log.info("Returning most likely match to remaining {0} unmatched sources".format(len(pre_snr_tar_catalogue)))
         else:
-                print('Initialising match of '+str(len(pre_snr_tar_catalogue))+' target sources')
+                log.info("Initialising match of {0} target sources".format(len(pre_snr_tar_catalogue)))
         #applying snr filter if it is specified 
         if snr_restriction!=False:
                 snr_filter=np.where((pre_snr_tar_catalogue['peak_flux']/pre_snr_tar_catalogue['local_rms'])>=snr_restriction)
@@ -256,7 +256,7 @@ def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catal
         else:
             tar_cat_matched_within_resolution=original_dist_tar_catalogue[gross_matched_idx_tar]
 
-        #this is becuse the probability determination uses the adjusted positions
+        #this is because the probability determination uses the adjusted positions
         tar_cat_for_prob=tar_catalogue[gross_matched_idx_tar]
         
         ref_cat_matched_within_resolution=ref_catalogue[gross_matched_idx_ref]
@@ -346,7 +346,7 @@ def run(raw_target_table, raw_reference_table, snr_restrict,log,options):
         target_sources_num=len(raw_target_table)
         #pre filter the reference catalogue for increased efficiency
         filtered_GLEAM=reference_pre_filter(raw_target_table, raw_reference_table)
-        print('The filtered reference catalogue has '+str(len(filtered_GLEAM))+' entries')
+        log.info("The filtered reference catalogue has {0} entries".format(len(filtered_GLEAM)))
 
 
         model_flux=options.model_flux
@@ -358,8 +358,8 @@ def run(raw_target_table, raw_reference_table, snr_restrict,log,options):
                 del(model)
 
         #run initial cross match
-        print('Run 1')
-        cross_match_table,updated_ref_cat,updated_tar_cat,updated_tar_cat_orig_dist=cross_matching(filtered_GLEAM, raw_target_table, raw_target_table, options.multiple_match_percentile, options.single_match_percentile, snr_restriction=snr_restrict,flux_match=options.flux_match)
+        log.info('Run 1')
+        cross_match_table,updated_ref_cat,updated_tar_cat,updated_tar_cat_orig_dist=cross_matching(filtered_GLEAM, raw_target_table, raw_target_table, options.multiple_match_percentile, options.single_match_percentile, log, snr_restriction=snr_restrict,flux_match=options.flux_match)
 
         #modelling will fail if we have less than 2 points, so raise an error before scipy does
         if len(cross_match_table)<2:
@@ -373,16 +373,16 @@ def run(raw_target_table, raw_reference_table, snr_restrict,log,options):
 
         #loop which runs through the process of modelling and cross matching until no improvement is found
         while improved==True:
-                print('Run '+str(count+1))
-                print('Number of cross matches so far: '+str(len(cross_match_table)))
+                log.info("Run {0}".format(count+1))
+                log.info("Number of cross matches so far: {0}".format(len(cross_match_table)))
                 start_of_run_cross_match_num=len(cross_match_table)
                 adjusted_tar_cat=model_offsets_and_update_positions(cross_match_table,updated_tar_cat_orig_dist,count,options)
-                additional_cross_matches,updated_ref_cat,updated_tar_cat,updated_tar_cat_orig_dist=cross_matching(updated_ref_cat,adjusted_tar_cat, updated_tar_cat_orig_dist, options.multiple_match_percentile, options.single_match_percentile, flux_match=options.flux_match)
+                additional_cross_matches,updated_ref_cat,updated_tar_cat,updated_tar_cat_orig_dist=cross_matching(updated_ref_cat,adjusted_tar_cat, updated_tar_cat_orig_dist, options.multiple_match_percentile, options.single_match_percentile, log, flux_match=options.flux_match)
                 #add the new cross matches to the total table
                 cross_match_table=vstack([cross_match_table,additional_cross_matches])
 		end_of_run_cross_match_num=len(cross_match_table)
                 if end_of_run_cross_match_num==start_of_run_cross_match_num:
-                        less_certain_cross_matches,updated_ref_cat,updated_tar_cat,updated_tar_cat_orig_dist=cross_matching(updated_ref_cat,adjusted_tar_cat, updated_tar_cat_orig_dist, options.multiple_match_percentile, options.single_match_percentile, flux_match=options.flux_match,final_run=True)
+                        less_certain_cross_matches,updated_ref_cat,updated_tar_cat,updated_tar_cat_orig_dist=cross_matching(updated_ref_cat,adjusted_tar_cat, updated_tar_cat_orig_dist, options.multiple_match_percentile, options.single_match_percentile, log, flux_match=options.flux_match,final_run=True)
                         #add the new cross matches to the total table
                         cross_match_table=vstack([cross_match_table,less_certain_cross_matches])
                         improved=False
@@ -390,7 +390,7 @@ def run(raw_target_table, raw_reference_table, snr_restrict,log,options):
         #determine number of target sources that still are not cross matched
         leftover_tar_sources=len(updated_tar_cat)
 
-        print('Matched '+str(int(target_sources_num-leftover_tar_sources))+ ' out of '+str(int(target_sources_num))+' sources in target catalogue')
+        log.info("Matched {0} out of {1} sources in target catalogue".format(int(target_sources_num-leftover_tar_sources),int(target_sources_num)))
 
         Table(updated_ref_cat).write('leftover_reference_catalogue'+options.save_file_suffix+'.'+options.output_format, format=options.output_format,overwrite=True)
         Table(updated_tar_cat_orig_dist).write('leftover_target_catalogue'+options.save_file_suffix+'.'+options.output_format, format=options.output_format,overwrite=True)
