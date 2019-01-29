@@ -240,13 +240,14 @@ if __name__=='__main__':
                                 sys.exit(1)
                         else:
                                 log.warning("{0} will be overwritten".format(filenames[i]))
-        for i in range(4,6):
-                if len(glob.glob(filenames[i]+'*.png'))>0:
-                        if options.output_overwrite==False:     
-                                log.error("Files beginning with {0} already exist".format(filenames[i]))
-                                sys.exit(1)
-                        else:
-                                log.warning("Files beginning with {0} will be overwritten".format(filenames[i]))
+        if options.plotting==True:
+                for i in range(4,6):
+                        if len(glob.glob(filenames[i]+'*.png'))>0:
+                                if options.output_overwrite==False:     
+                                        log.error("Files beginning with {0} already exist".format(filenames[i]))
+                                        sys.exit(1)
+                                else:
+                                        log.warning("Files beginning with {0} will be overwritten".format(filenames[i]))
 
         #bring the global variables in before running an external function
         if num_freq=='single':
