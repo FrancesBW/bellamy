@@ -61,8 +61,8 @@ if __name__=='__main__':
         options = parser.parse_args()
 
         #set up logging
-        FORMAT = '%(asctime)s MACCAS %(levelname)s  %(message)s'
-        logging.basicConfig(format=FORMAT,datefmt='%d/%m/%Y %H:%M:%S')
+        FORMAT = '%(asctime)s %(levelname)s  %(message)s'
+        logging.basicConfig(format=FORMAT,datefmt='%H:%M:%S')
         log=logging.getLogger("MACCAS")
         logging_level = logging.DEBUG if options.debug else logging.INFO
         log.setLevel(logging_level)
