@@ -168,7 +168,7 @@ if __name__=='__main__':
                 log.info("Overwrite exisiting output files: On")
         else:
                 log.info("Overwrite exisiting output files: Off")
-        if options.model_flux:
+        if options.model_flux and options.flux_match:
                 log.info("Flux modelling: On")
                 log.info("2D flux model degree: {0}".format(options.flux_model_deg))
         else:
