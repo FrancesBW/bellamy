@@ -313,7 +313,6 @@ if __name__=='__main__':
                 ref_local_rms_data=check_column_exists(ref_values[12],raw_reference_table,vars_g)
         elif snr_restrict==False and options.model_flux==False:
                 ref_local_rms_data=check_column_exists(ref_values[12],raw_reference_table,vars_g,optional=True,length=reference_table_length,variable='reference local rms')
-        ref_uuid_data=check_column_exists(ref_values[13],raw_reference_table,vars_g)
         else:
                 ref_local_rms_data=check_column_exists(ref_values[12],raw_reference_table,vars_g)
         
