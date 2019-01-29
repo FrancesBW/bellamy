@@ -46,7 +46,8 @@ if __name__=='__main__':
         settings.add_argument('--warpplot', dest='plotting', action="store_true", default=False, help='Output the measured and modelled offsets from each iteration as and flux model (if turned on) as png files.')
         settings.add_argument('--nofluxmatch', dest='flux_match', action="store_false", default=True, help='Only assess match probability on physical proximity on sky. Note that this amounts to a nearest neighbour match with dewarping.')
         settings.add_argument('--debug', dest='debug',action="store_true", default=False, help="Turn on debugging [Default=False]")
-
+        settings.add_argument('--writelog', dest='log_write', action='store_true', default=False, help="Write logged messages out to 'maccas_date_time.log' file [Default=False]")       
+        
         optional_inputs=parser.add_argument_group('Optional inputs')
         optional_inputs.add_argument('--outformat', dest='output_format', type=str, default="fits", help="File format for table outputs, can be any format supported by astropy.table.Table object writing tool [Default=fits]")
         optional_inputs.add_argument('--singlepercentile', dest='single_match_percentile', type=float, default=0.95, help='Percentile above which single matches are accepted as true matches [Default=0.95]')
@@ -55,16 +56,27 @@ if __name__=='__main__':
         optional_inputs.add_argument('--modeldeg', dest='flux_model_deg', type=int, default=1, help='Degree of 2D polynomial used to model large scale flux correction (only integers between 1 and 5 inclusive) [Default=1]')
         optional_inputs.add_argument('--tarformat', dest='tar_table_formatting_file', type=str, default=None, help="File to translate column names from supplied target catalogue into useable form for algrotihm. Complete supplied template file 'target_catalogue_format.txt' and call it here [Default=None]")
         optional_inputs.add_argument('--filesuffix', dest='save_file_suffix', type=str, default=None, help="Suffix appended to all file names from impending run, provided as an alternative to renaming previous run files or overwriting them [Default=None]")
-               
+        
         
         options = parser.parse_args()
 
         #set up logging
-        FORMAT = '%(asctime)-15s MACCAS  %(message)s'
-        logging.basicConfig(format=FORMAT)
+        FORMAT = '%(asctime)s MACCAS %(levelname)s  %(message)s'
+        logging.basicConfig(format=FORMAT,datefmt='%d/%m/%Y %H:%M:%S')
         log=logging.getLogger("MACCAS")
         logging_level = logging.DEBUG if options.debug else logging.INFO
         log.setLevel(logging_level)
+        
+        #set up file logging
+        if options.log_write:
+                import datetime
+                t=datetime.datetime.now()
+                suffix=str(t.day)+"-"+str(t.month)+"-"+str(t.year)+"_"+str(t.hour)+"-"+str(t.minute)+"-"+str(t.second)
+                formatter=logging.Formatter(FORMAT,datefmt='%d/%m/%Y %H:%M:%S')
+                fh=logging.FileHandler('test_log_'+suffix+'.log')
+                fh.setLevel(logging.DEBUG)
+                fh.setFormatter(formatter)
+                log.addHandler(fh)
         
 
         #provides the user with help dialogue about the program
