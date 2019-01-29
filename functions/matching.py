@@ -108,6 +108,7 @@ def model_offsets_and_update_positions(cross_matched_catalogue,target_catalogue,
                 ax.set_xlabel("Distance from pointing centre / degrees")
                 ax.set_ylabel("Distance from pointing centre / degrees")
                 ax.set_title("Source position offsets / arcsec")
+		#ax.quiverkey(cax, 0.9, 0.9, 0.01666667, r'$1\'$', labelpos='E',coordinates='figure')
                 plt.savefig("Measured_offsets" +options.save_file_suffix+"_run_"+str(run_num)+".png")
                 plt.close()
 
