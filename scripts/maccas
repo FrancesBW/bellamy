@@ -138,12 +138,12 @@ if __name__=='__main__':
                 tar_format_filename=options.tar_table_formatting_file
                 log.info("Target catalogue format used: {0}".format(tar_format_filename.split('/')[-1]))
         else:
-                tar_format_filename='target_format_default.txt'
+                tar_format_filename=data_dir+'target_format_default.txt'
                 log.info("Default target catalogue format used")
 
         #read in the target survey file format
         tar_required_format=['RA_name','DEC_name','RA_error_name','DEC_error_name','PSF_semimajor_axis_name','PSF_semiminor_axis_name','source_semimajor_axis_name','source_semiminor_axis_name','source_position_angle_name','peak_flux_name','peak_flux_error_name','integrated_flux_name','local_rms_name','unique_identifier_name']
-        with open(data_dir+tar_format_filename) as f:
+        with open(tar_format_filename) as f:
                 inputs = [line.rstrip('\n').rstrip('\r') for line in f][:14]
         tar_values=[line.split('=')[1].strip(' ') for line in inputs]
         if [line.split('=')[0] for line in inputs]==tar_required_format:
