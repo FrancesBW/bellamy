@@ -24,6 +24,7 @@ import logging
 import logging.config
 from functions.format_checks import *
 from functions.matching import *
+from functions.default_formats import *
 
 warnings.filterwarnings("ignore", category=UserWarning) 
 
@@ -111,11 +112,19 @@ if __name__=='__main__':
         #checks the user has specified reference survey table format. If not, raise a fatal error
         if options.ref_survey_name!=None:
                 if options.ref_survey_name.split('.')[-1]=='txt':
-                        ref_format_filename=options.ref_survey_name
+                        with open(options.ref_survey_name) as f:
+                                inputs = [line.rstrip('\n').rstrip('\r') for line in f][:16]
+                                ref_values=[line.split('=')[1].strip(' ') for line in inputs]
                         log.info("Reference catalogue format used: {0}".format(ref_format_filename.split('/')[-1]))
-                else:
-                        ref_format_filename=data_dir+options.ref_survey_name+'.txt'
+                elif options.ref_survey_name=='GLEAM':
+                        ref_values=GLEAM()
                         log.info("Reference catalogue format used: {0}".format(options.ref_survey_name))
+                elif options.ref_survey_name=='TGSS':
+                        ref_values=TGSS()
+                        log.info("Reference catalogue format used: {0}".format(options.ref_survey_name))
+                else:
+                        log.error("Could not read {0}. Please choose from 'GLEAM', 'TGSS' or specify file name for alternate table format.".format(options.ref_survey_name.split('/')[-1])
+                        sys.exit(1)
         else:
                 log.error("No reference catalogue table format supplied. Please choose from 'GLEAM', 'TGSS' or specify file name for alternate table format.")
                 sys.exit(1)
@@ -147,17 +156,17 @@ if __name__=='__main__':
 
         #checks if the user has specified a target catalogue table format. If not go to default
         if options.tar_table_formatting_file!=None:
-                tar_format_filename=options.tar_table_formatting_file
+                with open(options.tar_table_formatting_file) as f:
+                        inputs = [line.rstrip('\n').rstrip('\r') for line in f][:14]
+                        tar_values=[line.split('=')[1].strip(' ') for line in inputs]
                 log.info("Target catalogue format used: {0}".format(tar_format_filename.split('/')[-1]))
         else:
-                tar_format_filename=data_dir+'target_format_default.txt'
+                tar_values=target_default()
                 log.info("Default target catalogue format used")
 
         #read in the target survey file format
         tar_required_format=['RA_name','DEC_name','RA_error_name','DEC_error_name','PSF_semimajor_axis_name','PSF_semiminor_axis_name','source_semimajor_axis_name','source_semiminor_axis_name','source_position_angle_name','peak_flux_name','peak_flux_error_name','integrated_flux_name','local_rms_name','unique_identifier_name']
-        with open(tar_format_filename) as f:
-                inputs = [line.rstrip('\n').rstrip('\r') for line in f][:14]
-        tar_values=[line.split('=')[1].strip(' ') for line in inputs]
+        
         if [line.split('=')[0] for line in inputs]==tar_required_format:
                 tar_ra, tar_dec, tar_err_ra, tar_err_dec, tar_psf_a, tar_psf_b, tar_a, tar_b, tar_pa, tar_peak_flux, tar_err_peak_flux, tar_int_flux, tar_local_rms, tar_uuid=tar_values
         else:
