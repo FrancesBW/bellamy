@@ -147,15 +147,15 @@ if __name__=='__main__':
                 inputs = [line.rstrip('\n').rstrip('\r') for line in f][:14]
         tar_values=[line.split('=')[1].strip(' ') for line in inputs]
         if [line.split('=')[0] for line in inputs]==tar_required_format:
-                print([line.split('=')[0] for line in inputs])
-                print(tar_required_format)
                 tar_ra, tar_dec, tar_err_ra, tar_err_dec, tar_psf_a, tar_psf_b, tar_a, tar_b, tar_pa, tar_peak_flux, tar_err_peak_flux, tar_int_flux, tar_local_rms, tar_uuid=tar_values
         else:
                 writing_format=[]
                 for i in range(0,14):
                         writing_format.append(tar_required_format[i]+'=\n')
-                with open('reference_catalogue_format.txt', 'w') as f: 
+                with open('target_catalogue_format.txt', 'w') as f: 
                         f.writelines(writing_format)
+                log.error("{0} cannot be read. Please fill out 'target_catalogue_format.txt' in your working directory and call it in --tarformat".format(tar_format_filename.split('/')[-1]))
+                sys.exit(1)
 
         #apply all the run settings
         if options.snr_init_restrict:
