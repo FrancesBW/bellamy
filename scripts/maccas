@@ -132,24 +132,6 @@ if __name__=='__main__':
                         f.writelines(writing_format)
                 log.error("{0} cannot be read. Please fill out 'reference_catalogue_format.txt' in your working directory and call it in --refsurvey".format(ref_format_filename))
                 sys.exit(1)
-        
-        #reference catalog has the possibility of single or multiple frequency, need to check the column names exist in each type of reference catalog
-        if options.ref_survey_name=='GLEAM':
-                GLEAM_freq=['076', '084', '092', '099', '107', '115', '122', '130', '143', '151', '158', '166', '174', '181', '189', '197', '204', '212', '220', '227']
-                if options.tar_freq in np.array(GLEAM_freq, dtype=float):
-                        ref_freq=GLEAM_freq[np.where(np.array(GLEAM_freq, dtype=float)==options.tar_freq)]
-                else:
-                        above_tar_freq=np.array(GLEAM_freq)[np.where(np.array(GLEAM_freq, dtype=float)>float(options.tar_freq))]
-                        below_tar_freq=np.array(GLEAM_freq)[np.where(np.array(GLEAM_freq, dtype=float)<float(options.tar_freq))]
-                        if len(above_tar_freq)==0:
-                                ref_max_freq=GLEAM_freq[-1]
-                                ref_min_freq=GLEAM_freq[-2]
-                        elif len(below_tar_freq)==0:
-                                ref_max_freq=GLEAM_freq[1]
-                                ref_max_freq=GLEAM_freq[0]
-                        else:
-                                ref_max_freq=above_tar_freq[0]
-                                ref_min_freq=below_tar_freq[-1]
 
         #checks if the user has specified a target catalogue table format. If not go to default
         if options.tar_table_formatting_file!=None:
@@ -218,6 +200,25 @@ if __name__=='__main__':
                                 log.warning("Target and reference catalogue frequency either do not match, or have not been specified. This algorthm will continue on the assumption that they do match or are close enough for comparison. If this is not the case, results may be wildly inaccurate. Consider using a different catalogue that covers the target catalogue frequency or turning flux matching off, to match only on position (using --nofluxmatch).")
         else:
                 log.info("Flux match: Off")
+                
+        #We know exactly what is present in the GLEAM catalogue, so we will find the neighbouring frequencies 
+        if options.ref_survey_name=='GLEAM':
+                GLEAM_freq=['076', '084', '092', '099', '107', '115', '122', '130', '143', '151', '158', '166', '174', '181', '189', '197', '204', '212', '220', '227']
+                if options.tar_freq in np.array(GLEAM_freq, dtype=float):
+                        ref_freq=GLEAM_freq[np.where(np.array(GLEAM_freq, dtype=float)==options.tar_freq)]
+                else:
+                        above_tar_freq=np.array(GLEAM_freq)[np.where(np.array(GLEAM_freq, dtype=float)>float(options.tar_freq))]
+                        below_tar_freq=np.array(GLEAM_freq)[np.where(np.array(GLEAM_freq, dtype=float)<float(options.tar_freq))]
+                        if len(above_tar_freq)==0:
+                                ref_max_freq=GLEAM_freq[-1]
+                                ref_min_freq=GLEAM_freq[-2]
+                        elif len(below_tar_freq)==0:
+                                ref_max_freq=GLEAM_freq[1]
+                                ref_max_freq=GLEAM_freq[0]
+                        else:
+                                ref_max_freq=above_tar_freq[0]
+                                ref_min_freq=below_tar_freq[-1]
+        
         log.info("Output format: {0}".format(options.output_format))
         log.info("Single match confidence percentile: {0}".format(options.single_match_percentile))
         log.info("Multiple match confidence percentile: {0}".format(options.multiple_match_percentile))
