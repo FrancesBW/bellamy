@@ -2,7 +2,6 @@
 from __future__ import print_function
 import numpy as np
 import os
-#import textwrap
 from scipy import interpolate
 from scipy.interpolate import CloughTocher2DInterpolator
 import astropy
@@ -15,7 +14,6 @@ import astropy.units as u
 import sys
 import glob
 import argparse
-#import psutil
 import matplotlib.pyplot as plt
 from matplotlib import gridspec
 from copy import copy
