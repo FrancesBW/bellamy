@@ -85,6 +85,6 @@ Currently supported catalogues are:
 
 
 ## Formats:
-| foo | bar |
-| --- | --- |
-| baz | bim |
+| Data type (typical units) | target catalogue defaults | GLEAM   | TGSS |
+| ------------------------- | ------------------------- | ------- | ---- |
+| RA (J2000)                | ra                        | RAJ2000 |
