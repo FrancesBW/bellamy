@@ -44,7 +44,7 @@ def check_column_exists(column,table,var,optional=False,length=None, variable=No
                 test=table[column]
                 return test
         #if it cannot be found, check if there is a frequency prefix, with or without the underscore
-        except KeyError:
+        except (KeyError, ValueError):
                 if ref_p_or_s=='prefix':
                         try:
                                 if num_freq=='single':
@@ -60,7 +60,7 @@ def check_column_exists(column,table,var,optional=False,length=None, variable=No
                                         else:
                                                 #if it is error, apply the appropriate error propagation given the interpolation
                                                 return np.sqrt((test_1*((float(ref_max_freq)-options.tar_freq)/(float(ref_max_freq)-float(ref_min_freq))))**2+(test_2*((options.tar_freq-float(ref_min_freq))/(float(ref_max_freq)-float(ref_min_freq))))**2)
-                        except KeyError:
+                        except (KeyError, ValueError):
                                 try:
                                         if num_freq=='single':
                                                 test=table[ref_freq+column]
@@ -75,7 +75,7 @@ def check_column_exists(column,table,var,optional=False,length=None, variable=No
                                                 else:
                                                         #if it is error, apply the appropriate error propagation given the interpolation
                                                         return np.sqrt((test_1*((float(ref_max_freq)-options.tar_freq)/(float(ref_max_freq)-float(ref_min_freq))))**2+(test_2*((options.tar_freq-float(ref_min_freq))/(float(ref_max_freq)-float(ref_min_freq))))**2)
-                                except KeyError:
+                                except (KeyError, ValueError):
                                         #if no column matching either 3 names can be found, throw we can either return no data and continue or raise a fatal error
                                         if optional==True:
                                                 #data is not required for algorithm to proceed, so just return zeroes and log a warning
@@ -101,7 +101,7 @@ def check_column_exists(column,table,var,optional=False,length=None, variable=No
                                         else:
                                                 #if it is error, apply the appropriate error propagation given the interpolation
                                                 return np.sqrt((test_1*((float(ref_max_freq)-options.tar_freq)/(float(ref_max_freq)-float(ref_min_freq))))**2+(test_2*((options.tar_freq-float(ref_min_freq))/(float(ref_max_freq)-float(ref_min_freq))))**2)
-                        except KeyError:
+                        except (KeyError, ValueError):
                                 try:
                                         if num_freq=='single':
                                                 test=table[column+ref_freq]
@@ -116,7 +116,7 @@ def check_column_exists(column,table,var,optional=False,length=None, variable=No
                                                 else:
                                                         #if it is error, apply the appropriate error propagation given the interpolation
                                                         return np.sqrt((test_1*((float(ref_max_freq)-options.tar_freq)/(float(ref_max_freq)-float(ref_min_freq))))**2+(test_2*((options.tar_freq-float(ref_min_freq))/(float(ref_max_freq)-float(ref_min_freq))))**2)
-                                except KeyError:
+                                except (KeyError, ValueError):
                                         #if no column matching either 3 names can be found, we can either return no data and continue or raise a fatal error
                                         if optional==True:
                                                 #data is not required for algorithm to proceed, so just return zeroes and log a warning
