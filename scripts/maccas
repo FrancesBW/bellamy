@@ -284,7 +284,7 @@ if __name__=='__main__':
                 log.error("Unsupported file format {0}. Please use fits or vot files".format(reference_cat_filename.split('.')[-1]))
                 sys.exit(1)
         
-        if rtarget_cat_filename.split('.')[-1]=='fits':
+        if target_cat_filename.split('.')[-1]=='fits':
                 raw_target_table=np.squeeze(fits.open(target_cat_filename)[1].data)
         elif target_cat_filename.split('.')[-1]=='vot':
                 raw_target_table=parse_single_table(target_cat_filename).array
