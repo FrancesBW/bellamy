@@ -45,5 +45,8 @@ Currently supported catalogues are:
 
 * ```--norestrict``` will turn off the signal-to-noise restriction that is applied on the first iteration of cross-matching. Only target sources above an SNR cutoff (where SNR is peak_flux/local_rms) are passed to the matching function. This restriction is applied by default to provide the most accurate initial offset model. 
 
+* ```--overwrite``` will allow output files to overwrite files of the same name. If those files already exist and overwrite is active, the logger will also display a warning on which files will be overwritten. 
+
+* ```--nofluxmodel``` will turn off the modelling of a flux adjustment factor across the target catalogue field of view. 
 
 
