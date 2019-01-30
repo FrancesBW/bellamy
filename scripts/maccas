@@ -41,7 +41,7 @@ if __name__=='__main__':
         settings.add_argument('--norestrict', dest='snr_init_restrict',action="store_false", default=True, help='Turn off initial restriction that matches only sources above a set SNR for the first run through')
         settings.add_argument('--overwrite', dest='output_overwrite', action="store_true", default=False,help='Overwrite files with same names as outputs, see documentation for these names')
         settings.add_argument('--nofluxmodel', dest='model_flux', action="store_false", default=True, help='Turn off large scale flux correction model. This is recommended only if target catalogue fluxes have been accurately calibrated')
-        settings.add_argument('--warpplot', dest='plotting', action="store_true", default=False, help='Output the measured and modelled offsets from each iteration as and flux model (if turned on) as png files.')
+        settings.add_argument('--plot', dest='plotting', action="store_true", default=False, help='Output the measured and modelled offsets from each iteration as and flux model (if turned on) as png files.')
         settings.add_argument('--nofluxmatch', dest='flux_match', action="store_false", default=True, help='Only assess match probability on physical proximity on sky. Note that this amounts to a nearest neighbour match with dewarping.')
         settings.add_argument('--debug', dest='debug',action="store_true", default=False, help="Turn on debugging [Default=False]")
         settings.add_argument('--writelog', dest='log_write', action='store_true', default=False, help="Write logged messages out to 'maccas_date_time.log' file [Default=False]")       
