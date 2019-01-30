@@ -32,7 +32,7 @@ $ python setup.py install
 
 MACCAS only requires 3 inputs to run a cross match: a target catalogue, a reference catalogue and the reference catalogue format. The simplest execution on the command line would be:
 ```
-$ maccas --target target_filename --reference reference_filename --refsurvey reference_survey_name
+$ maccas --target TARGET_FILENAME --reference REFERENCE_FILENAME --refsurvey REFERENCE_SURVEY_NAME
 ```
 
 If the reference catalogue is from a supported survey, calling the survey name is sufficient (e.g. if using the GLEAM catalogue enter '--refsurvey GLEAM' on the command line). If you are using a reference catalogue from a non-supported survey, or of your own design, you can edit the 'reference_catalogue_format.txt' file to reflect the column names in your reference catalogue for necessary data used by MACCAS. Once you have edited the file you can call MACCAS on the command line with '--refsurvey reference_catalogue_format.txt' and MACCAS will read this file.
@@ -43,11 +43,11 @@ Currently supported catalogues are:
 
 ### Required Inputs:
 
-* ```--target ```
+* ```--target TARGET_FILENAME```
 
-* ```--reference ```
+* ```--reference REFERENCE_FILENAME```
 
-* ```--refsurvey ```
+* ```--refsurvey REFERENCE_SURVEY_NAME```
 
 ### Settings:
 
@@ -59,8 +59,32 @@ Currently supported catalogues are:
 
 * ```--plot``` will turn on plotting of measured and modelled offsets of sources matched between the target and reference catalogues. It also turns on plotting for the flux model applied to the target catalogue.
 
-* ```--nofluxmatch``` will stop peak flux of target and reference sources being compared for matching. If flux match is turned off, this algorithm returns a nearest neighbour match with modelled adjustments.
+* ```--nofluxmatch``` will stop peak flux of target and reference sources being compared for matching. If flux match is turned off, MACCAS returns a nearest neighbour match with modelled adjustments.
 
 * ```--debug``` will turn on debug mode.
 
-* ```--writelog``` will write out the log shown in the terminal to 'maccas_log_(date)\_(time).log'
+* ```--writelog``` will write out the log shown in the terminal to 'maccas_log_(date)\_(time).log'. 
+
+### Optional Inputs:
+
+* ```--tarfreq FREQUENCY ``` provide the frequency of the target catalogue. This is only required if both flux-matching is on (as is the default), and the reference catalogue has flux measurements for more than one frequency. If the reference catalogue has flux measurements for only one fequency or has no specified frequency, then MACCAS proceeds by assuming it is comparable to the target catalogue. 
+
+* ```--outformat FILE_EXTENSION``` provide the desired file extension/format for the output tables. See astropy.table.Table docuemntation for supported writing formats (http://docs.astropy.org/en/stable/io/unified.html#built-in-readers-writers). Default format is 'fits'.
+
+* ```--singlepercentile PERCENTILE``` provide the desired percentile cutoff for target sources with single reference match candidates within the search radius. Only target sources that meet this confidence level will be accepted as matches and used in the offset model. Default value is 0.95.
+
+* ```--multipercentile PERCENTILE``` provide the desired normalised percentile cutoff for target sources with multiple reference match candidates within the search radius. Only target sources that meet this confidence level will be accepted as matches and used in the offset model. Default value is 0.60.
+
+* ```--snr SNR_CUTOFF``` provide the desired signal-to-noise (SNR, defined as peak_flux/local_rms) cutoff for target sources matched in the first iteration. To remove this cutoff use '--norestrict'. Default value is 10.
+
+* ```--modeldeg DEGREE``` provide the desired degree of model used in flux model (integer between 1 and 5). Modelled using scipy.interpolate.LSQBivariateSpline (see https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.interpolate.LSQBivariateSpline.html). Default value is 1.
+
+* ```--tarformat FORMAT_FILENAME``` provide the format file for the target catalogue (see Formats section for guide). Default is detailed in Formats section.
+
+* ```--filesuffix SUFFIX``` provide desired suffix to be appended for all output files (except log). Note a '\_' will be added between default filename and suffix, so there is no need to include this in the suffix. Default is None.
+
+
+## Formats:
+| foo | bar |
+| --- | --- |
+| baz | bim |
