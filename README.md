@@ -85,6 +85,24 @@ Currently supported catalogues are:
 
 
 ## Formats:
-| Data type (typical units) | target catalogue defaults | GLEAM   | TGSS |
-| ------------------------- | ------------------------- | ------- | ---- |
-| RA (J2000)                | ra                        | RAJ2000 |
+| Data type (typical units)        | target catalogue defaults | GLEAM         | TGSS        |
+| -------------------------------- | ------------------------- | ------------- | ----------- |
+| RA (J2000, deg)                  | ra                        | RAJ2000       | RA          |
+| DEC (J2000, deg)                 | dec                       | DEJ2000       | DEC         |
+| error in RA (deg)                | err_ra                    | err_RAJ2000   | E_RA        |
+| error in DEC (deg)               | err_dec                   | err_DEJ2000   | E_DEC       |
+| Beam/psf semimajor axis (arcsec) | psf_a                     | psf_a         |             |
+| Beam/psf semiminor axis (arcsec) | psf_b                     | psf_b         |             |
+| Source semimajor axis (arcsec)   | a                         | a             | Maj         |
+| Source semiminor axis (arcsec)   | b                         | b             | Min         |
+| Source position angle (deg)      | pa                        | pa            | PA          |
+| Peak flux (Jy/Beam)              | peak_flux                 | peak_flux     | Peak_flux   |
+| error in Peak flux (Jy/Beam)     | err_peak_flux             | err_peak_flux | E_Peak_flux |
+| Integrated flux (Jy)             | int_flux                  | int_flux      | Total_flux  |
+| RMS noise (Jy/Beam)              | local_rms                 | local_rms     |             |
+| Unique source name               | uuid                      | Name          | Source_name |
+| Catalogue frequency (MHz)        |                           | 076-227       | 150         |
+| Frequency prefix or suffix       |                           | suffix        |             |
+
+Note: The last row only applies to catalogues with flux data for multiple frequencies. In this case, columns pertaining to flux or psf etc. may have a prefix or suffix indicating the frequency the column refers to. If this is the case for your reference catalogue, you can edit the 'reference_catalog_format.txt' file and add either prefix or suffix at the end of the 'frequency_prefix_or_suffix=' line. For example:
+    GLEAM does not have a column called 'peak_flux' like its format suggests, but rather multiple columns called 'peak_flux_076', 'peak_flux_084', 'peak_flux_092' and so on. By specifying that the peak flux data is stored in a column generally called 'peak_flux' and specifying the frequency is a suffix on these column names, allows the algorithm to search for columns called 'peak_flux' with the frequency appended on the end (with or without a '\_'). 
