@@ -41,6 +41,14 @@ Currently supported catalogues are:
 * GLEAM (see http://www.mwatelescope.org/gleam for instructions on downloading GLEAM catalogue)
 * TGSS (see http://tgssadr.strw.leidenuniv.nl/doku.php for instructions on downloading TGSS catalogue)
 
+### Required Inputs:
+
+* ```--target ```
+
+* ```--reference ```
+
+* ```--refsurvey ```
+
 ### Settings:
 
 * ```--norestrict``` will turn off the signal-to-noise restriction that is applied on the first iteration of cross-matching. Only target sources above an SNR cutoff (where SNR is peak_flux/local_rms) are passed to the matching function. This restriction is applied by default to provide the most accurate initial offset model. 
@@ -49,4 +57,10 @@ Currently supported catalogues are:
 
 * ```--nofluxmodel``` will turn off the modelling of a flux adjustment factor across the target catalogue field of view. 
 
+* ```--plot``` will turn on plotting of measured and modelled offsets of sources matched between the target and reference catalogues. It also turns on plotting for the flux model applied to the target catalogue.
 
+* ```--nofluxmatch``` will stop peak flux of target and reference sources being compared for matching. If flux match is turned off, this algorithm returns a nearest neighbour match with modelled adjustments.
+
+* ```--debug``` will turn on debug mode.
+
+* ```--writelog``` will write out the log shown in the terminal to 'maccas_log_(date)\_(time).log'
