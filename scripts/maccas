@@ -35,7 +35,6 @@ if __name__=='__main__':
         necessary_inputs=parser.add_argument_group('Required inputs')
         necessary_inputs.add_argument('--target', dest='tar_cat', type=str, default=None, help='Target catalogue filename or path')
         necessary_inputs.add_argument('--reference', dest='ref_cat', type=str, default=None, help='Reference catalogue filename or path')
-        necessary_inputs.add_argument('--freq', dest='tar_freq', type=float, default=None, help='Frequency of target catalogue on MHz')
         necessary_inputs.add_argument('--refsurvey', dest='ref_survey_name', type=str, default=None, help="Name of survey used as reference catalog, current support for 'GLEAM' and 'TGSS'. If using a different survey, Complete supplied template file 'reference_catalogue_format.txt' and call it here.")
 
         settings=parser.add_argument_group('Settings')
@@ -48,6 +47,7 @@ if __name__=='__main__':
         settings.add_argument('--writelog', dest='log_write', action='store_true', default=False, help="Write logged messages out to 'maccas_date_time.log' file [Default=False]")       
         
         optional_inputs=parser.add_argument_group('Optional inputs')
+        optional_inputs.add_argument('--tarfreq', dest='tar_freq', type=float, default=None, help='Frequency of target catalogue on MHz')
         optional_inputs.add_argument('--outformat', dest='output_format', type=str, default="fits", help="File format for table outputs, can be any format supported by astropy.table.Table object writing tool [Default=fits]")
         optional_inputs.add_argument('--singlepercentile', dest='single_match_percentile', type=float, default=0.95, help='Percentile above which single matches are accepted as true matches [Default=0.95]')
         optional_inputs.add_argument('--multipercentile', dest='multiple_match_percentile', type=float, default=0.6, help='Normalised percentile above which one of multiple  matches is accepted as true matches [Default=0.6]')
