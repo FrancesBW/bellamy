@@ -19,7 +19,7 @@ To install MACCAS you can use one of the following methods:
 
 * Install directly from github
 ```
-$ git install https://github.com/FrancesBW/maccas.git
+$ pip install git+https://github.com/FrancesBW/maccas.git
 ```
 * Download from github and install via the setup file
 ```
