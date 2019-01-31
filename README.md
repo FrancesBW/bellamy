@@ -126,3 +126,7 @@ Note: The last row only applies to reference catalogues with flux data for multi
 **For example:**
 
 GLEAM does not have a column called 'peak_flux' like its format suggests, but rather multiple columns called 'peak_flux_076', 'peak_flux_084', 'peak_flux_092' and so on. By specifying that the peak flux data is stored in a column generally called 'peak_flux' and specifying the frequency is a suffix on these column names, allows the algorithm to search for columns called 'peak_flux' with the frequency appended on the end (with or without a '\_'). 
+
+## How it works
+
+The first step taken by MACCAS is to gauge how well the fluxes 
