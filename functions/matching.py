@@ -74,7 +74,7 @@ def model_offsets_and_update_positions(cross_matched_catalogue,target_catalogue,
 
         :return:  cross_matched_table containing position information of matched sources only, reference catalogue with cross matched sources removed, modelled position target catalogue with cross matched sources removed, original position target catalogue with cross matched sources removed
         """
-
+	
         #calculating the offsets from the cross matched catalogue
         d_ra=cross_matched_catalogue[tar_ra_column]-cross_matched_catalogue[ref_ra_column]
 	d_dec=cross_matched_catalogue[tar_dec_column]-cross_matched_catalogue[ref_dec_column]
@@ -115,9 +115,7 @@ def model_offsets_and_update_positions(cross_matched_catalogue,target_catalogue,
                 gs = gridspec.GridSpec(100,100)
                 gs.update(hspace=0,wspace=0)
                 ax = fig.add_subplot(gs[0:100,0:100])
-                #gx=np.linspace(70.0,99.0,1000)
-                #gy=np.linspace(-17.0,11.0,1000)
-                gx, gy = np.mgrid[70.:99.:(29.0)/50.,-17.:11.:(28.0)/50.]
+                gx, gy = np.mgrid[min(cross_matched_catalogue[tar_ra_column])-1.:max(cross_matched_catalogue[tar_ra_column])+1.:0.1,min(cross_matched_catalogue[tar_dec_column])-1.:max(cross_matched_catalogue[tar_dec_column])+1:0.1]
                 angles = np.degrees(np.arctan2(model_d_dec(gx,gy), model_d_ra(gx,gy)))
                 cax = ax.quiver(gx, gy, model_d_ra(gx, gy), model_d_dec(gx,gy),angles,cmap=plt.cm.get_cmap('rainbow'))
                 ax.set_xlabel("Distance from pointing centre / degrees")
