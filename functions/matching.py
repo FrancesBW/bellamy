@@ -180,16 +180,15 @@ def prob_comb(ref_candidates, tar_entry, confidence_percentile,single_candidate_
                 combined_probs=pos_prob*flux_probs
         else:
                 combined_probs=pos_prob
-	if np.sum(combined_probs)==0:
-		return False
+	if final_run==False:
+		rounded_raw_probs=raw_probs.round(decimals=2)
+		negligible_filter=np.where(rounded_raw_probs!=0)
+		raw_probs=raw_probs[negligible_filter]
+		names=ref_candidates['uuid'][negligible_filter]
+	
         normalisation_factor=np.sum(combined_probs)
-        final_probs=combined_probs/normalisation_factor
-        rounded_probs=final_probs.round(decimals=2)
-        negligible_filter=np.where(rounded_probs!=0.)
-        combined_probs=combined_probs[negligible_filter]
-        names=ref_candidates['uuid'][negligible_filter]
-        #print(Table(zip(pos_prob,flux_probs,combined_probs,final_probs),names=names))
-        table=zip(names,final_probs[negligible_filter])
+        final_probs=raw_probs/normalisation_factor
+        table=zip(names,final_probs)
         probability_table=[tar_entry['uuid'],table]
         
         if final_run==True:
@@ -198,13 +197,15 @@ def prob_comb(ref_candidates, tar_entry, confidence_percentile,single_candidate_
                 
         if len(ref_candidates[negligible_filter])>1:
                 most_likely=np.argmax(np.array(probability_table[1])[:,1])
-                if float(np.array(probability_table[1])[most_likely,1])>=confidence_percentile:
-                        return [probability_table[0],np.array(probability_table[1])[most_likely,0],combined_probs[most_likely],float(np.array(probability_table[1])[most_likely,1]),len(ref_candidates[negligible_filter])]
+		if final_run==True:
+			return [probability_table[0],np.array(probability_table[1])[most_likely,0],raw_probs[most_likely],float('NaN'),len(raw_probs)]
+                elif float(np.array(probability_table[1])[most_likely,1])>=confidence_percentile:
+                        return [probability_table[0],np.array(probability_table[1])[most_likely,0],raw_probs[most_likely],float(np.array(probability_table[1])[most_likely,1]),len(raw_probs)]
                 else:
                         return False
         else:
-                if combined_probs>=single_candidate_confidence:
-                        return [probability_table[0],np.array(probability_table[1])[0,0],combined_probs[0],float('NaN'),1]
+                if raw_probs>=single_candidate_confidence:
+                        return [probability_table[0],np.array(probability_table[1])[0,0],raw_probs[0],float('NaN'),1]
                 else:
                         return False
                         
