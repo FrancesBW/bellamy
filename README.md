@@ -133,6 +133,6 @@ The first step taken by MACCAS is to gauge how well the fluxes match between the
 
 Then, the adjusted target catalogue and reference catalogued are passed to a cross matching function, which searches within a 10' radius of a target source to find any possible matching refernce sources. Then using the difference in position and flux between the target source and each possible reference match, each match is assigned a value (between 0 and 1) to determine how 'likely' it is to be correct. The likelihood is calculated from a Gaussian distribution like so:
 
-$r$
+r$\exp(p)$
 
 
