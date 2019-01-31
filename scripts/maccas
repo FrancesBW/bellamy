@@ -351,6 +351,16 @@ if __name__=='__main__':
                 ref_local_rms_data=check_column_exists(ref_values[12],raw_reference_table,vars_g,optional=True,length=reference_table_length,variable='reference local rms')
         ref_uuid_data=check_column_exists(ref_values[13],raw_reference_table,vars_g)
         
+        #because the sky is spherical, we run into modelling problems when crossing the RA 0/360 boundary. So we will introduce a clause for if we're crossing this boundary
+	if np.any(tar_ra_data<2.) and np.any(tar_ra_data>358.):
+                log.info("Implemented wrap around of coordinates for target and reference catalogues.")
+                for i in range(0,len(tar_ra_data)):
+                        if tar_ra_data[i]>180.:
+                                tar_ra_data[i]-=360.
+                for i in range(0,len(ref_ra_data)):
+                        if ref_ra_data[i]>180.:
+                                ref_ra_data[i]-=360.
+        
         #Finally we want to create Table objects for the reference and target catalogues for the other modules to easily use and reference
         raw_target_catalog=Table([tar_ra_data,tar_dec_data,tar_err_ra_data,tar_err_dec_data,tar_psf_a_data,tar_psf_b_data,tar_a_data,tar_b_data,tar_pa_data,tar_peak_flux_data,tar_err_peak_flux_data,tar_int_flux_data,tar_local_rms_data,tar_uuid_data],names=('ra','dec','err_ra','err_dec','psf_a','psf_b','a','b','pa','peak_flux','err_peak_flux','int_flux','local_rms','uuid'))
         raw_reference_catalog=Table([ref_ra_data,ref_dec_data,ref_err_ra_data,ref_err_dec_data,ref_psf_a_data,ref_psf_b_data,ref_a_data,ref_b_data,ref_pa_data,ref_peak_flux_data,ref_err_peak_flux_data,ref_int_flux_data,ref_local_rms_data,ref_uuid_data],names=('ra','dec','err_ra','err_dec','psf_a','psf_b','a','b','pa','peak_flux','err_peak_flux','int_flux','local_rms','uuid'))
