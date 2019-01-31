@@ -85,6 +85,7 @@ Currently supported catalogues are:
 
 
 ## Formats:
+
 | Data type (typical units)        | target catalogue defaults | GLEAM         | TGSS        |
 | -------------------------------- | ------------------------- | ------------- | ----------- |
 | RA (J2000, deg)                  | ra                        | RAJ2000       | RA          |
@@ -105,4 +106,5 @@ Currently supported catalogues are:
 | Frequency prefix or suffix       |                           | suffix        |             |
 
 Note: The last row only applies to catalogues with flux data for multiple frequencies. In this case, columns pertaining to flux or psf etc. may have a prefix or suffix indicating the frequency the column refers to. If this is the case for your reference catalogue, you can edit the 'reference_catalog_format.txt' file and add either prefix or suffix at the end of the 'frequency_prefix_or_suffix=' line. For example:
+
     GLEAM does not have a column called 'peak_flux' like its format suggests, but rather multiple columns called 'peak_flux_076', 'peak_flux_084', 'peak_flux_092' and so on. By specifying that the peak flux data is stored in a column generally called 'peak_flux' and specifying the frequency is a suffix on these column names, allows the algorithm to search for columns called 'peak_flux' with the frequency appended on the end (with or without a '\_'). 
