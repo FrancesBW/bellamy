@@ -5,10 +5,6 @@ Setup for MACCAS
 import os
 import sys
 from setuptools import setup
-import packaging
-import packaging.version
-import packaging.specifiers
-import packaging.requirements
 
 reqs=['numpy>=1.15.4', 'astropy>=2.0, <3','scipy>=1.1.0','argparse>=1.2.1', 'psutil>=5.4.8', 'matplotlib>=2.2.3']
 
