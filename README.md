@@ -133,6 +133,21 @@ The first step taken by MACCAS is to gauge how well the fluxes match between the
 
 Then, the adjusted target catalogue and reference catalogued are passed to a cross matching function, which searches within a 10' radius of a target source to find any possible matching refernce sources. Then using the difference in position and flux between the target source and each possible reference match, each match is assigned a value (between 0 and 1) to determine how 'likely' it is to be correct. The likelihood is calculated from a Gaussian distribution like so:
 
-r$\exp(p)$
+the math thing will go here along with a explanation of variables. 
 
+Target sources with only one possible match will be accepted as good matches if their raw likelihood meets the 'singlepercentile' threshold. For target sources with multiple possible matches, a normalised likelihood will be calculated (so that all likelihoods add up to 1) and the most likely reference source will be accepted as a good match if the normalised likelihood meets the 'multipercentile' threshold. Target sources with accepted matches are removed from the target list left to be matched. Target sources with no accepted matches, remain in the target list left to be matched. 
+
+Accepted matches are then used to model the offsets of the target and reference sources. A Rbf model is used, which is then applied to the remaining target sources. The measured offsets and the model based on these, can then be plotted and output. 
+
+This process is repeated until there are no additional accepted matches to be made. Note that by default, the first iteration of cross-matching runs with only target sources with a SNR of 10 or more, to ensure the initial offset model is as accurate as can be. Once no new matches are made, the algorithm returns all target sources with their most likely match and the raw likelihood of that match.
+
+The algorithm will output 4 tables of the specified file format (fits by default) with the following names (with a suffix if the user has specified one):
+
+* 'cross_matched_table': each row contains the positions, dimensions and unique identifiers of each target source and its matched reference source. It also contains the raw and normalised (where applicable) likelihoods of the match, as well as the number of possible matches that were considered for the target source within the search radius.
+
+* 'leftover_reference_catalogue': contains the data for the reference sources that weren't matched or deemed the most likely to match a target source.
+
+* 'leftover_target_catalogue': *possibly deprecated*
+
+* 'leftover_unwarped_target_catalogue': *possibly deprecated*
 
