@@ -129,4 +129,10 @@ GLEAM does not have a column called 'peak_flux' like its format suggests, but ra
 
 ## How it works
 
-The first step taken by MACCAS is to gauge how well the fluxes 
+The first step taken by MACCAS is to gauge how well the fluxes match between the reference and target catalogues. It uses sources with a signal to noise greater than 10, does a quick and dirty nearest neighbour match and compares the fluxes of the matched pairs. It then fits a model (2D bivariate spline) of the adjustment factor needed to bring the target catalogue fluxes in line with the reference catalogue and applies it (a rough form of calibration).
+
+Then, the adjusted target catalogue and reference catalogued are passed to a cross matching function, which searches within a 10' radius of a target source to find any possible matching refernce sources. Then using the difference in position and flux between the target source and each possible reference match, each match is assigned a value (between 0 and 1) to determine how 'likely' it is to be correct. The likelihood is calculated from a Gaussian distribution like so:
+
+$r$
+
+
