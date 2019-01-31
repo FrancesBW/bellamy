@@ -86,6 +86,22 @@ Currently supported catalogues are:
 
 ## Formats:
 
+As catalogue formats are wildly varied, it becomes necessary to have some sort of formatting guide for MACCAS, to allow it to read in any catalogue. 
+
+**Target catalogue**
+
+By default it is assumed that the target catalogue is constructed by the source finding program Aegean (see https://github.com/PaulHancock/Aegean for more information). This points MACCAS to search for columns called 'ra', 'dec' 'err_ra' etc. in the target catalogue (full list shown in target catalogue defaults column below). If you target catalogue was constructed by Aegean, or happens to have exactly the same column names, then you do not need to specify a format file for the target catalogue. If your target catalogue was not constructed by Aegean, or has different column names, edit 'target_catalogue_format.txt' (found in the format_templates directory) with the exact column names for the data required. Note that this file does not ask for the catalogue frequency (you can specify this using ```--tarfreq```). This means that MACCAS cannot support target catalogues with multiple frequency data, like it can with reference catalogues. If you have data for multiple frequencies in your target catalogue, you must specify the column names for the specific frequency you want to match. 
+
+**Reference catalogue**
+
+MACCAS does not have a default reference catalogue format, but it does have supported catalogues, for which the formats are already known. So far only the GLEAM catalogue (76-227 MHz) and TGSS catalogue (150 MHz) are supported but it is possible to add support for more large survey catalogues. If your reference catalogue is a supported one, you need only specify the survey acronym/name for the ```--refsurvey``` argument. If your reference catalogue is not supported, edit 'reference_catalogue_format.txt' (found in the format_templates directory) with the exact column names for the data required. 
+
+This file (unlike the one for the target catalogue), asks you to specify the catalogue frequency. You can specify a single frequency, or a frequency range. If your reference catalogue has data for mulitple frequencies, and has data for the exact same frequency as your target catalogue, then you have to specify that as a single frequency. **For example**, if my target catalogue is measured at 200 MHz, and my reference catalogue has data for 150, 200, 250 and 300 MHz, I would specify in the formatting file that the catalogue frequency is 200. 
+
+If the frequency of your target catalogue falls in between measured frequencies in your reference catalogue, then you can specify a frequency range. If you specify a frequency range, you MUST specify it as the nearest frequencies in the reference catalogue, to the target catalogue frequency. **For example**, if my target catalogue is measured at 145 MHz, and my reference catalogue has data for 130, 140, 150, 160 and 170 MHz, I would specify in the formatting file that the catalogue frequency is 140-150. 
+
+The table below shows the default target catalogue column names and the supported catalogue column names. 
+
 | Data type (typical units)        | target catalogue defaults | GLEAM         | TGSS        |
 | -------------------------------- | ------------------------- | ------------- | ----------- |
 | RA (J2000, deg)                  | ra                        | RAJ2000       | RA          |
@@ -105,6 +121,8 @@ Currently supported catalogues are:
 | Catalogue frequency (MHz)        |                           | 076-227       | 150         |
 | Frequency prefix or suffix       |                           | suffix        |             |
 
-Note: The last row only applies to catalogues with flux data for multiple frequencies. In this case, columns pertaining to flux or psf etc. may have a prefix or suffix indicating the frequency the column refers to. If this is the case for your reference catalogue, you can edit the 'reference_catalog_format.txt' file and add either prefix or suffix at the end of the 'frequency_prefix_or_suffix=' line. For example:
+Note: The last row only applies to reference catalogues with flux data for multiple frequencies. In this case, columns pertaining to flux or psf etc. may have a prefix or suffix indicating the frequency the column refers to. If this is the case for your reference catalogue, you can edit the 'reference_catalog_format.txt' file and add either prefix or suffix at the end of the 'frequency_prefix_or_suffix=' line. 
 
-    GLEAM does not have a column called 'peak_flux' like its format suggests, but rather multiple columns called 'peak_flux_076', 'peak_flux_084', 'peak_flux_092' and so on. By specifying that the peak flux data is stored in a column generally called 'peak_flux' and specifying the frequency is a suffix on these column names, allows the algorithm to search for columns called 'peak_flux' with the frequency appended on the end (with or without a '\_'). 
+**For example:**
+
+GLEAM does not have a column called 'peak_flux' like its format suggests, but rather multiple columns called 'peak_flux_076', 'peak_flux_084', 'peak_flux_092' and so on. By specifying that the peak flux data is stored in a column generally called 'peak_flux' and specifying the frequency is a suffix on these column names, allows the algorithm to search for columns called 'peak_flux' with the frequency appended on the end (with or without a '\_'). 
