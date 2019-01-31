@@ -274,11 +274,6 @@ def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catal
         ref_cat_uuid=np.array(ref_cat_uuid)
         tar_cat_uuid=np.array(tar_cat_uuid)
 
-                        
-        #remove the correctly cross matched sources from the reference catalogue 
-        new_ref_index_list=np.delete(np.arange(0,len(ref_catalogue)),np.arange(0,len(ref_catalogue))[np.isin(ref_catalogue['uuid'],ref_cat_uuid)])
-        new_ref_catalogue=ref_catalogue[new_ref_index_list]
-
         #remove the correctly cross matched sources from the modelled position target catalogue and original position target catalogue
         new_tar_index_list=np.delete(np.arange(0,len(pre_snr_tar_catalogue)),np.arange(0,len(pre_snr_tar_catalogue))[np.isin(pre_snr_tar_catalogue['uuid'],tar_cat_uuid)])
         new_tar_catalogue=pre_snr_tar_catalogue[new_tar_index_list]
