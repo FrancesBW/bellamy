@@ -177,9 +177,9 @@ def prob_comb(ref_candidates, tar_entry, confidence_percentile,single_candidate_
         pos_prob=position_prob(ref_candidates, tar_entry)
         if flux_on==True:
                 flux_probs=flux_prob(ref_candidates, tar_entry)
-                combined_probs=pos_prob*flux_probs
+                raw_probs=pos_prob*flux_probs
         else:
-                combined_probs=pos_prob
+                raw_probs=pos_prob
 	if final_run==False:
 		rounded_raw_probs=raw_probs.round(decimals=2)
 		negligible_filter=np.where(rounded_raw_probs!=0)
