@@ -197,7 +197,7 @@ def prob_comb(ref_candidates, tar_entry, confidence_percentile,single_candidate_
                 confidence_percentile=0.0
                 single_candidate_confidence=0.0
                 
-        if len(ref_candidates[negligible_filter])>1:
+        if len(raw_probs)>1:
                 most_likely=np.argmax(np.array(probability_table[1])[:,1])
 		if final_run==True:
 			return [probability_table[0],np.array(probability_table[1])[most_likely,0],raw_probs[most_likely],float('NaN'),len(raw_probs)]
