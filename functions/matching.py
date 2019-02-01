@@ -115,7 +115,7 @@ def model_offsets_and_update_positions(cross_matched_catalogue,target_catalogue,
                 gs = gridspec.GridSpec(100,100)
                 gs.update(hspace=0,wspace=0)
                 ax = fig.add_subplot(gs[0:100,0:100])
-                gx, gy = np.mgrid[min(cross_matched_catalogue[tar_ra_column])-1.:max(cross_matched_catalogue[tar_ra_column])+1.:0.1,min(cross_matched_catalogue[tar_dec_column])-1.:max(cross_matched_catalogue[tar_dec_column])+1:0.1]
+                gx, gy = np.mgrid[min(cross_matched_catalogue[tar_ra_column])-1.:max(cross_matched_catalogue[tar_ra_column])+1.:0.5,min(cross_matched_catalogue[tar_dec_column])-1.:max(cross_matched_catalogue[tar_dec_column])+1:0.5]
                 angles = np.degrees(np.arctan2(model_d_dec(gx,gy), model_d_ra(gx,gy)))
                 cax = ax.quiver(gx, gy, model_d_ra(gx, gy), model_d_dec(gx,gy),angles,cmap=plt.cm.get_cmap('rainbow'))
                 ax.set_xlabel("Distance from pointing centre / degrees")
