@@ -279,7 +279,7 @@ def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catal
         new_tar_catalogue=pre_snr_tar_catalogue[new_tar_index_list]
         new_original_dist_tar_catalogue=original_dist_tar_catalogue[new_tar_index_list]
         
-        return cross_matched_table, new_ref_catalogue, new_tar_catalogue, new_original_dist_tar_catalogue
+        return cross_matched_table, ref_catalogue, new_tar_catalogue, new_original_dist_tar_catalogue
 
 def flux_model(raw_tar_catalogue,filtered_ref_catalogue,options):
         """
