@@ -191,7 +191,10 @@ def prob_comb(ref_candidates, tar_entry, confidence_percentile,single_candidate_
 		names=ref_candidates['uuid']
 	
         normalisation_factor=np.sum(raw_probs)
-        final_probs=raw_probs/normalisation_factor
+	if final_run==False:
+        	final_probs=raw_probs/normalisation_factor
+	else:
+		final_probs=raw_probs
         table=zip(names,final_probs)
         probability_table=[tar_entry['uuid'],table]
         
