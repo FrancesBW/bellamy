@@ -155,7 +155,9 @@ def position_prob(ref_candidates, tar_candidates):
         tar_resolution=tar_candidates['psf_a']/3600
         tar_position_error=np.maximum(tar_candidates['err_ra'],tar_candidates['err_dec'])
         ultimate_error_allowance=np.sqrt(ref_resolution**2+ref_position_error**2+tar_resolution**2+tar_position_error**2)
-        true_error=np.sqrt((ref_candidates['ra']-tar_candidates['ra'])**2+(ref_candidates['dec']-tar_candidates['dec'])**2)
+	tar_pos=SkyCoord(tar_candidates['ra'],tar_candidates['dec'], unit=u.degree, frame='icrs')
+	ref_pos=SkyCoord(ref_candidates['ra'],ref_candidates['dec'], unit=u.degree, frame='icrs')
+        true_error=tar_pos.separation(ref_pos).deg
         probs=np.exp(-((true_error)**2)/(2*ultimate_error_allowance**2))
         return probs
 
