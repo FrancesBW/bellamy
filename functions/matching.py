@@ -185,6 +185,8 @@ def prob_comb(ref_candidates, tar_entry, confidence_percentile,single_candidate_
 		negligible_filter=np.where(rounded_raw_probs!=0)
 		raw_probs=raw_probs[negligible_filter]
 		names=ref_candidates['uuid'][negligible_filter]
+	else:
+		names=ref_candidates['uuid']
 	
         normalisation_factor=np.sum(raw_probs)
         final_probs=raw_probs/normalisation_factor
