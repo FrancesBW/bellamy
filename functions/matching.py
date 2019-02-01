@@ -326,7 +326,7 @@ def flux_model(raw_tar_catalogue,filtered_ref_catalogue,options):
                 solution_masked=np.ma.masked_array(solution,mask=np.isnan(zi))
                 plot=plt.imshow(solution_masked)
                 plt.colorbar(plot)
-                plt.savefig('Flux_correction_model.png')
+                plt.savefig('Flux_correction_model'+options.save_file_suffix+'.png')
                 plt.close()
         return resulting_model
 
