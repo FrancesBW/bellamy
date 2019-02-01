@@ -352,8 +352,8 @@ if __name__=='__main__':
         ref_uuid_data=check_column_exists(ref_values[13],raw_reference_table,vars_g)
         
         #because the sky is spherical, we run into modelling problems when crossing the RA 0/360 boundary. So we will introduce a clause for if we're crossing this boundary
-	condition_1=np.any(tar_ra_data<2.) and np.any(tar_ra_data>358.)
-	condition_2=np.any(tar_ra_data<2.) and np.all(tar_ra_data<180.)
+	condition_1=np.any(tar_ra_data<10.) and np.any(tar_ra_data>350.)
+	condition_2=np.any(tar_ra_data<10.) and np.all(tar_ra_data<180.)
 	if condition_1 or condition_2:
                 log.info("Implemented wrap around of coordinates for target and reference catalogues.")
                 for i in range(0,len(tar_ra_data)):
