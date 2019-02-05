@@ -42,7 +42,7 @@ if __name__=='__main__':
         settings.add_argument('--plot', dest='plotting', action="store_true", default=False, help='Output the measured and modelled offsets from each iteration as and flux model (if turned on) as png files.')
         settings.add_argument('--nofluxmatch', dest='flux_match', action="store_false", default=True, help='Only assess match probability on physical proximity on sky. Note that this amounts to a nearest neighbour match with dewarping.')
         settings.add_argument('--debug', dest='debug',action="store_true", default=False, help="Turn on debugging [Default=False]")
-        settings.add_argument('--writelog', dest='log_write', action='store_true', default=False, help="Write logged messages out to 'maccas_date_time.log' file [Default=False]")       
+        settings.add_argument('--writelog', dest='log_write', action='store_true', default=False, help="Write logged messages out to 'bellamy_date_time.log' file [Default=False]")       
         
         optional_inputs=parser.add_argument_group('Optional inputs')
         optional_inputs.add_argument('--tarfreq', dest='tar_freq', type=float, default=None, help='Frequency of target catalogue on MHz')
@@ -60,7 +60,7 @@ if __name__=='__main__':
         #set up logging
         FORMAT = '%(asctime)s %(levelname)s  %(message)s'
         logging.basicConfig(format=FORMAT,datefmt='%H:%M:%S')
-        log=logging.getLogger("MACCAS")
+        log=logging.getLogger("BELLAMY")
         logging_level = logging.DEBUG if options.debug else logging.INFO
         log.setLevel(logging_level)
         
