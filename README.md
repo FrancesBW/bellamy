@@ -1,10 +1,10 @@
-# MACCAS: Multi Attribute Cross-matcher with Correction for wArped Sky
+# BELLAMY: A cross-matching package for the cynical astronomer
 
-MACCAS is a cross-matching algorithm that aims to match all sources in the supplied target catalogue to sources in a reference catalogue. MACCAS utilises not only the position of a source on the sky, but also the flux data, to determine the most probable match in the reference catalog to the target source. This two variable approach means MACCAS is a more rigorous cross-matcher than the matching tools supplied by TOPCAT or astropy alone. Additionally, MACCAS attempts to undo any spatial distortion that may be affecting the target catalogue, by creating a model of the offsets of matched sources which is then applied to unmatched sources. Furthermore, MACCAS provides the option for a simple flux correction across the target catalogue, in the case that there is some large scale calibration error affecting the target catalogue.
+BELLAMY is a cross-matching algorithm that aims to match all sources in the supplied target catalogue to sources in a reference catalogue. BELLAMY utilises not only the position of a source on the sky, but also the flux data, to determine the most probable match in the reference catalog to the target source. This two variable approach means BELLAMY is a more rigorous cross-matcher than the matching tools supplied by TOPCAT or astropy alone. Additionally, BELLAMY attempts to undo any spatial distortion that may be affecting the target catalogue, by creating a model of the offsets of matched sources which is then applied to unmatched sources. Furthermore, BELLAMY provides the option for a simple flux correction across the target catalogue, in the case that there is some large scale calibration error affecting the target catalogue.
 
 ## Version support and required packages:
 
-MACCAS is compatible with Python 2.7, but currently untested with Python 3. 
+BELLAMY is compatible with Python 2.7, but currently untested with Python 3. 
 
 The Python 2.7 version requires the following packages:
 * numpy
@@ -15,27 +15,27 @@ The Python 2.7 version requires the following packages:
 
 ## Installation:
 
-To install MACCAS you can use one of the following methods:
+To install BELLAMY you can use one of the following methods:
 
 * Install directly from github
 ```
-$ pip install git+https://github.com/FrancesBW/maccas.git
+$ pip install git+https://github.com/FrancesBW/bellamy.git
 ```
 * Download from github and install via the setup file
 ```
-$ git clone https://github.com/FrancesBW/maccas.git
-$ cd maccas
+$ git clone https://github.com/FrancesBW/bellamy.git
+$ cd bellamy
 $ python setup.py install
 ```
 
 ## Usage:
 
-MACCAS only requires 3 inputs to run a cross match: a target catalogue, a reference catalogue and the reference catalogue format. The simplest execution on the command line would be:
+BELLAMY only requires 3 inputs to run a cross match: a target catalogue, a reference catalogue and the reference catalogue format. The simplest execution on the command line would be:
 ```
-$ maccas --target TARGET_FILENAME --reference REFERENCE_FILENAME --refsurvey REFERENCE_SURVEY_NAME
+$ bellamy --target TARGET_FILENAME --reference REFERENCE_FILENAME --refsurvey REFERENCE_SURVEY_NAME
 ```
 
-If the reference catalogue is from a supported survey, calling the survey name is sufficient (e.g. if using the GLEAM catalogue enter '--refsurvey GLEAM' on the command line). If you are using a reference catalogue from a non-supported survey, or of your own design, you can edit the 'reference_catalogue_format.txt' file to reflect the column names in your reference catalogue for necessary data used by MACCAS. Once you have edited the file you can call MACCAS on the command line with '--refsurvey reference_catalogue_format.txt' and MACCAS will read this file.
+If the reference catalogue is from a supported survey, calling the survey name is sufficient (e.g. if using the GLEAM catalogue enter '--refsurvey GLEAM' on the command line). If you are using a reference catalogue from a non-supported survey, or of your own design, you can edit the 'reference_catalogue_format.txt' file to reflect the column names in your reference catalogue for necessary data used by BELLAMY. Once you have edited the file you can call BELLAMY on the command line with '--refsurvey reference_catalogue_format.txt' and BELLAMY will read this file.
 
 Currently supported catalogues are:
 * GLEAM (see http://www.mwatelescope.org/gleam for instructions on downloading GLEAM catalogue)
@@ -59,15 +59,15 @@ Currently supported catalogues are:
 
 * ```--plot``` will turn on plotting of measured and modelled offsets of sources matched between the target and reference catalogues. It also turns on plotting for the flux model applied to the target catalogue.
 
-* ```--nofluxmatch``` will stop peak flux of target and reference sources being compared for matching. If flux match is turned off, MACCAS returns a nearest neighbour match with modelled adjustments.
+* ```--nofluxmatch``` will stop peak flux of target and reference sources being compared for matching. If flux match is turned off, BELLAMY returns a nearest neighbour match with modelled adjustments.
 
 * ```--debug``` will turn on debug mode.
 
-* ```--writelog``` will write out the log shown in the terminal to 'maccas_log_(date)\_(time).log'. 
+* ```--writelog``` will write out the log shown in the terminal to 'bellamy_log_(date)\_(time).log'. 
 
 ### Optional Inputs:
 
-* ```--tarfreq FREQUENCY ``` provide the frequency of the target catalogue. This is only required if both flux-matching is on (as is the default), and the reference catalogue has flux measurements for more than one frequency. If the reference catalogue has flux measurements for only one fequency or has no specified frequency, then MACCAS proceeds by assuming it is comparable to the target catalogue. 
+* ```--tarfreq FREQUENCY ``` provide the frequency of the target catalogue. This is only required if both flux-matching is on (as is the default), and the reference catalogue has flux measurements for more than one frequency. If the reference catalogue has flux measurements for only one fequency or has no specified frequency, then BELLAMY proceeds by assuming it is comparable to the target catalogue. 
 
 * ```--outformat FILE_EXTENSION``` provide the desired file extension/format for the output tables. See astropy.table.Table docuemntation for supported writing formats (http://docs.astropy.org/en/stable/io/unified.html#built-in-readers-writers). Default format is 'fits'.
 
@@ -86,11 +86,11 @@ Currently supported catalogues are:
 
 ## Formats:
 
-As catalogue formats are wildly varied, it becomes necessary to have some sort of formatting guide for MACCAS, to allow it to read in any catalogue. 
+As catalogue formats are wildly varied, it becomes necessary to have some sort of formatting guide for BELLAMY, to allow it to read in any catalogue. 
 
 **Target catalogue**
 
-By default it is assumed that the target catalogue is constructed by the source finding program Aegean (see https://github.com/PaulHancock/Aegean for more information). This points MACCAS to search for columns called 'ra', 'dec' 'err_ra' etc. in the target catalogue (full list shown in target catalogue defaults column below). If you target catalogue was constructed by Aegean, or happens to have exactly the same column names, then you do not need to specify a format file for the target catalogue. If your target catalogue was not constructed by Aegean, or has different column names, edit 'target_catalogue_format.txt' (found in the format_templates directory) with the exact column names for the data required. Note that this file does not ask for the catalogue frequency (you can specify this using ```--tarfreq```). This means that MACCAS cannot support target catalogues with multiple frequency data, like it can with reference catalogues. If you have data for multiple frequencies in your target catalogue, you must specify the column names for the specific frequency you want to match. 
+By default it is assumed that the target catalogue is constructed by the source finding program Aegean (see https://github.com/PaulHancock/Aegean for more information). This points BELLAMY to search for columns called 'ra', 'dec' 'err_ra' etc. in the target catalogue (full list shown in target catalogue defaults column below). If you target catalogue was constructed by Aegean, or happens to have exactly the same column names, then you do not need to specify a format file for the target catalogue. If your target catalogue was not constructed by Aegean, or has different column names, edit 'target_catalogue_format.txt' (found in the format_templates directory) with the exact column names for the data required. Note that this file does not ask for the catalogue frequency (you can specify this using ```--tarfreq```). This means that MACCAS cannot support target catalogues with multiple frequency data, like it can with reference catalogues. If you have data for multiple frequencies in your target catalogue, you must specify the column names for the specific frequency you want to match. 
 
 **Reference catalogue**
 
@@ -129,7 +129,7 @@ GLEAM does not have a column called 'peak_flux' like its format suggests, but ra
 
 ## How it works
 
-The first step taken by MACCAS is to gauge how well the fluxes match between the reference and target catalogues. It uses sources with a signal to noise greater than 10, does a quick and dirty nearest neighbour match and compares the fluxes of the matched pairs. It then fits a model (2D bivariate spline) of the adjustment factor needed to bring the target catalogue fluxes in line with the reference catalogue and applies it (a rough form of calibration).
+The first step taken by BELLAMY is to gauge how well the fluxes match between the reference and target catalogues. It uses sources with a signal to noise greater than 10, does a quick and dirty nearest neighbour match and compares the fluxes of the matched pairs. It then fits a model (2D bivariate spline) of the adjustment factor needed to bring the target catalogue fluxes in line with the reference catalogue and applies it (a rough form of calibration).
 
 Then, the adjusted target catalogue and reference catalogued are passed to a cross matching function, which searches within a 10' radius of a target source to find any possible matching refernce sources. Then using the difference in position and flux between the target source and each possible reference match, each match is assigned a value (between 0 and 1) to determine how 'likely' it is to be correct. The likelihood is calculated from a Gaussian distribution like so:
 
