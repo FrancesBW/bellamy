@@ -26,11 +26,9 @@ from functions.default_formats import *
 
 warnings.filterwarnings("ignore", category=UserWarning) 
 
-data_dir=os.path.join("~",os.path.dirname(sys.executable),"maccas_catalog_formats/")
-
 if __name__=='__main__':
         
-        parser=argparse.ArgumentParser(prog='maccas',prefix_chars='-')
+        parser=argparse.ArgumentParser(prog='bellamy',prefix_chars='-')
         
         necessary_inputs=parser.add_argument_group('Required inputs')
         necessary_inputs.add_argument('--target', dest='tar_cat', type=str, default=None, help='Target catalogue filename or path')
@@ -72,7 +70,7 @@ if __name__=='__main__':
                 t=datetime.datetime.now()
                 suffix=str(t.day)+"-"+str(t.month)+"-"+str(t.year)+"_"+str(t.hour)+"-"+str(t.minute)+"-"+str(t.second)
                 formatter=logging.Formatter(FORMAT,datefmt='%d/%m/%Y %H:%M:%S')
-                fh=logging.FileHandler('maccas_log_'+suffix+'.log')
+                fh=logging.FileHandler('bellamy_log_'+suffix+'.log')
                 fh.setLevel(logging.DEBUG)
                 fh.setFormatter(formatter)
                 log.addHandler(fh)
