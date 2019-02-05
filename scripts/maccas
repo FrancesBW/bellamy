@@ -359,11 +359,11 @@ if __name__=='__main__':
                 for i in range(0,len(tar_ra_data)):
                         if tar_ra_data[i]>180.:
                                 tar_ra_data[i]=tar_ra_data[i]-360.
-				print tar_ra_data[i]
+				print(tar_ra_data[i])
                 for i in range(0,len(ref_ra_data)):
                         if ref_ra_data[i]>180.:
                                 ref_ra_data[i]=ref_ra_data[i]-360.
-				print ref_ra_data[i]
+				print(ref_ra_data[i])
         
         #Finally we want to create Table objects for the reference and target catalogues for the other modules to easily use and reference
         raw_target_catalog=Table([tar_ra_data,tar_dec_data,tar_err_ra_data,tar_err_dec_data,tar_psf_a_data,tar_psf_b_data,tar_a_data,tar_b_data,tar_pa_data,tar_peak_flux_data,tar_err_peak_flux_data,tar_int_flux_data,tar_local_rms_data,tar_uuid_data],names=('ra','dec','err_ra','err_dec','psf_a','psf_b','a','b','pa','peak_flux','err_peak_flux','int_flux','local_rms','uuid'))
