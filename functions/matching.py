@@ -20,6 +20,7 @@ from copy import copy
 import warnings
 import logging
 import logging.config
+import random
 
 def reference_pre_filter(target_catalog, reference_catalog, target_freq=None, reference_freq=None):
         """
@@ -331,14 +332,16 @@ def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catal
                                 ref_cat_uuid.append(ref_uuid)
                                 tar_cat_uuid.append(tar_uuid)
                                 
+	random.shuffle(tar_uuid)			
+	
 	if len(cross_matched_table)>0 and final_run==False:
-		rejected_match_idx=[]
+		shift=0
 		for i in range(0,len(tar_cat_uuid)):
 			if reject_outliers(vstack([already_cross_matched,cross_matched_table]), tar_cat_uuid[i])=='reject':
 				print('rejected something')
-				rejected_match_idx.append(i)
-	
-		cross_matched_table.remove_rows(rejected_match_idx)
+				cross_matched_table.remove_row(i-shift)
+				shift+=1
+
 		
         tar_cat_uuid=np.array(tar_cat_uuid)
 	tar_cat_uuid=tar_cat_uuid[np.delete(np.arange(0,len(tar_cat_uuid)),rejected_match_idx)]
