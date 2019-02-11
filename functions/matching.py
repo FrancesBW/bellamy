@@ -332,7 +332,7 @@ def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catal
 	if len(cross_matched_table)>0:
 		rejected_match_idx=[]
 		for i in range(0,len(tar_cat_uuid)):
-			if reject_outliers(cross_match_table=vstack([already_cross_matched,cross_matched_table]), tar_cat_uuid[i])=='reject':
+			if reject_outliers(vstack([already_cross_matched,cross_matched_table]), tar_cat_uuid[i])=='reject':
 				print('rejected something')
 				rejected_match_idx.append(i)
 	
