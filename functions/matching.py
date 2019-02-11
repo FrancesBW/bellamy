@@ -338,11 +338,12 @@ def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catal
 	random.shuffle(tar_cat_uuid)	
 	
 	print('Are they still there?' ,np.all(np.isin(copt,tar_cat_uuid)))
-	
+	rejected_match_idx=[]
 	if len(cross_matched_table)>0 and final_run==False:
 		for i in range(0,len(tar_cat_uuid)):
 			if reject_outliers(vstack([already_cross_matched,cross_matched_table]), tar_cat_uuid[i])=='reject':
 				print('rejected something')
+				rejected_match_idx.append(i)
 				cross_matched_table.remove_row(np.where(cross_matched_table['tar_uuid']==tar_cat_uuid[i])[0][0])
 
 		
