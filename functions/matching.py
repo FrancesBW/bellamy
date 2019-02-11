@@ -223,10 +223,10 @@ def prob_comb(ref_candidates, tar_entry, confidence_percentile,single_candidate_
                 raw_probs=pos_prob
 		flux_probs=np.ones(len(pos_prob))*float('Nan')
 	if final_run==False:
-		pos_prob=pos_prob[negligible_filter]
-		flux_probs=flux_probs[negligible_filter]
 		rounded_raw_probs=raw_probs.round(decimals=2)
 		negligible_filter=np.where(rounded_raw_probs!=0)
+		pos_prob=pos_prob[negligible_filter]
+		flux_probs=flux_probs[negligible_filter]
 		raw_probs=raw_probs[negligible_filter]
 		names=ref_candidates['uuid'][negligible_filter]
 	else:
