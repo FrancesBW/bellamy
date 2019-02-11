@@ -138,7 +138,7 @@ def reject_outliers(cross_matched_table,source_uuid):
         """
 	table_copy=copy(cross_matched_table)
 	entry_of_interest=table_copy[np.where(cross_matched_table['tar_uuid']==source_uuid)]
-	table_copy.remove_row(np.where(cross_matched_table['tar_uuid']==source_uuid)[0])
+	table_copy.remove_row(np.where(cross_matched_table['tar_uuid']==source_uuid)[0][0])
 	
 	matched_offset_ra=entry_of_interest['tar_ra']-entry_of_interest['ref_ra']
 	matched_offset_dec=entry_of_interest['tar_dec']-entry_of_interest['ref_dec']
@@ -331,7 +331,7 @@ def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catal
                                 cross_matched_table.add_row((target_entry['ra'],target_entry['dec'],target_entry['a'],target_entry['b'],target_entry['pa'],target_entry['peak_flux'],ref_catalogue['ra'][reference_entry_idx],ref_catalogue['dec'][reference_entry_idx],ref_catalogue['a'][reference_entry_idx],ref_catalogue['b'][reference_entry_idx],ref_catalogue['pa'][reference_entry_idx],ref_catalogue['peak_flux'][reference_entry_idx],target_entry['uuid'],ref_catalogue['uuid'][reference_entry_idx],match[2],match[3],match[4],match[5],match[6]))
                                 ref_cat_uuid.append(ref_uuid)
                                 tar_cat_uuid.append(tar_uuid)
-        tar_cat_uuid=np.array(tar_cat_uuid)                       
+        #tar_cat_uuid=np.array(tar_cat_uuid)                       
 	random.shuffle(tar_cat_uuid)			
 	
 	if len(cross_matched_table)>0 and final_run==False:
