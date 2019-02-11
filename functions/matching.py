@@ -268,7 +268,7 @@ def prob_comb(ref_candidates, tar_entry, confidence_percentile,single_candidate_
                         return False
                         
 
-def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catalogue, confidence_percentile, single_candidate_confidence, log, already_cross_matched,snr_restriction=False, flux_match=True,final_run=False):
+def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catalogue, confidence_percentile, single_candidate_confidence, log, already_cross_matched=None,snr_restriction=False, flux_match=True,final_run=False):
         """
         Take the updated reference and target catalogues to perform a cross match within a resolution radius. Allows user to define a restriction on the SNR threshold of source, how tightly the fluxes should match and a normalisation factor for fluxes between the two catalogues.
         
@@ -305,7 +305,9 @@ def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catal
         ref_cat_uuid=[]
         tar_cat_uuid=[]
         cross_matched_table=Table(names=('tar_ra', 'tar_dec','tar_a','tar_b','tar_pa', 'tar_flux','ref_ra', 'ref_dec','ref_a','ref_b','ref_pa','ref_flux','tar_uuid','ref_name','pos_prob','flux_prob','raw_prob','norm_prob','num_of_candidates'),dtype=('f8','f8','f8','f8','f8','f8','f8','f8','f8','f8','f8','f8','U36','U14','f8','f8','f8','f8','i4'))
-        gross_matched_idx_ref, gross_matched_idx_tar, gross_matched_sep, dum=tar_cat.search_around_sky(ref_cat,limiting_res)
+        if already_cross_matched==None:
+		already_cross_matched=copy(cross_matched_table)
+	gross_matched_idx_ref, gross_matched_idx_tar, gross_matched_sep, dum=tar_cat.search_around_sky(ref_cat,limiting_res)
         if snr_restriction!=False:
             tar_cat_matched_within_resolution=original_dist_tar_catalogue[snr_filter][gross_matched_idx_tar]
         else:
