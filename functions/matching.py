@@ -439,7 +439,7 @@ def run(raw_target_table, raw_reference_table, snr_restrict,log,options):
                 log.info("Number of cross matches so far: {0}".format(len(cross_match_table)))
                 start_of_run_cross_match_num=len(cross_match_table)
                 adjusted_tar_cat=model_offsets_and_update_positions(cross_match_table,updated_tar_cat_orig_dist,count,options)
-                additional_cross_matches,updated_ref_cat,updated_tar_cat,updated_tar_cat_orig_dist=cross_matching(updated_ref_cat,adjusted_tar_cat, updated_tar_cat_orig_dist, options.multiple_match_percentile, options.single_match_percentile, log, already_cross_matched=cross_matched_table,flux_match=options.flux_match)
+                additional_cross_matches,updated_ref_cat,updated_tar_cat,updated_tar_cat_orig_dist=cross_matching(updated_ref_cat,adjusted_tar_cat, updated_tar_cat_orig_dist, options.multiple_match_percentile, options.single_match_percentile, log, already_cross_matched=cross_match_table,flux_match=options.flux_match)
                 #add the new cross matches to the total table
                 cross_match_table=vstack([cross_match_table,additional_cross_matches])
 		end_of_run_cross_match_num=len(cross_match_table)
