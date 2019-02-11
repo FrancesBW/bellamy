@@ -163,7 +163,7 @@ def reject_outliers(cross_matched_table,source_uuid):
 	print('Allowed position error :', allowed_pos_error)
 	
 	
-	print(Table([['offset_ra','offset_dec','sep','angle'],[matched_offset_ra,matched_offset_dec,matched_sep,matched_angle],['offset_ra','offset_dec','sep','angle'],[predicted_offset_ra,predicted_offset_dec,predicted_sep,predicted_angle]],names=('matched','','predicted','')))
+	print(Table([['offset_ra','offset_dec','sep','angle'],[matched_offset_ra,matched_offset_dec,matched_sep,matched_angle],['offset_ra','offset_dec','sep','angle'],[predicted_offset_ra,predicted_offset_dec,predicted_sep,predicted_angle]],names=('matched',' ','predicted',' ')))
 	
 	if np.abs(matched_angle-predicted_angle)>45. and predicted_sep<matched_sep:
 		return 'reject'
