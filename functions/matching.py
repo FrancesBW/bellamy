@@ -138,6 +138,8 @@ def reject_outliers(cross_matched_table,source_uuid):
         """
 	table_copy=copy(cross_matched_table)
 	entry_of_interest=table_copy[np.where(cross_matched_table['tar_uuid']==source_uuid)]
+	print('UUID :',source_uuid)
+	print('conditional :',np.where(cross_matched_table['tar_uuid']==source_uuid))
 	table_copy.remove_row(np.where(cross_matched_table['tar_uuid']==source_uuid)[0][0])
 	
 	matched_offset_ra=entry_of_interest['tar_ra']-entry_of_interest['ref_ra']
