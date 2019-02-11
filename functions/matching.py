@@ -254,7 +254,7 @@ def prob_comb(ref_candidates, tar_entry, confidence_percentile,single_candidate_
                         return False
         else:
                 if raw_probs>=single_candidate_confidence:
-                        return [probability_table[0],np.array(probability_table[1])[0,0],raw_probs[0],float('NaN'),1]
+                        return [probability_table[0],np.array(probability_table[1])[0,0],pos_prob[0],flux_probs[0],raw_probs[0],float('NaN'),1]
                 else:
                         return False
                         
