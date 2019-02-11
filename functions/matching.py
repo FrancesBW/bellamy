@@ -126,6 +126,45 @@ def model_offsets_and_update_positions(cross_matched_catalogue,target_catalogue,
         
         return target_catalogue_copy
 
+def reject_outliers(cross_matched_table,source_uuid):
+	"""
+        To reject matches that don't fit with rbf model
+        
+        :param cross_matched_table: the list of cross matches with the necessary information
+        :param source_uuid: the target source uuid that's been matched
+
+        :return:  an array that represents the relative probability of the target source matching each reference source
+        """
+	table_copy=copy(cross_matched_table)
+	entry_of_interest=table_copy[np.where(cross_matched_table['uuid']==source_uuid)]
+	table_copy.remove_row(np.where(cross_matched_table['uuid']==source_uuid))
+	allowed_pos_error=matched_sep*np.sqrt(-0.5/np.log(entry_of_interest['pos_prob']))
+	
+	matched_offset_ra=entry_of_interest['tar_ra']-entry_of_interest['ref_ra']
+	matched_offset_dec=entry_of_interest['tar_dec']-entry_of_interest['ref_dec']
+	matched_sep=np.sqrt(matched_offset_ra**2+matched_offset_dec**2)
+	matched_angle=np.degrees(np.arctan2(matched_offset_dec,matched_offset_ra))
+	
+	d_ra=table_copy['tar_ra']-table_copy['ref_ra']
+	d_dec=table_copy['tar_dec']-table_copy['ref_dec']
+	
+	model_d_ra=interpolate.Rbf(table_copy['tar_ra'], table_copy['tar_dec'], d_ra, function='linear',smooth=0.032777778)
+	model_d_dec=interpolate.Rbf(table_copy['tar_ra'], table_copy['tar_dec'], d_dec, function='linear',smooth=0.032777778)
+	
+	predicted_offset_ra=model_d_ra(entry_of_interest['tar_ra'],entry_of_interest['tar_dec'])
+	predicted_offset_dec=model_d_dec(entry_of_interest['tar_ra'],entry_of_interest['tar_dec'])
+	predicted_sep=np.sqrt(predicted_offset_ra**2+predicted_offset_dec**2)
+	predicted_angle=np.degrees(np.arctan2(predicted_offset_dec,predicted_offset_ra))
+	
+	if np.abs(matched_angle-predicted_angle)>45. and predicted_sep<matched_sep:
+		return 'reject'
+	elif matched_sep>predicted_sep+allowed_pos_error:
+		return 'reject'
+	else:
+		return 'accept'
+		
+        
+
 def flux_prob(ref_candidates, tar_candidates):
         """
         To calculate the gaussian probability that a source matches in flux. Altered positions must be passed to this function, not original ones.
@@ -182,7 +221,10 @@ def prob_comb(ref_candidates, tar_entry, confidence_percentile,single_candidate_
                 raw_probs=pos_prob*flux_probs
         else:
                 raw_probs=pos_prob
+		flux_probs=np.ones(len(pos_prob))*float('Nan')
 	if final_run==False:
+		pos_prob=pos_prob[negligible_filter]
+		flux_probs=flux_probs[negligible_filter]
 		rounded_raw_probs=raw_probs.round(decimals=2)
 		negligible_filter=np.where(rounded_raw_probs!=0)
 		raw_probs=raw_probs[negligible_filter]
@@ -205,9 +247,9 @@ def prob_comb(ref_candidates, tar_entry, confidence_percentile,single_candidate_
         if len(raw_probs)>1:
                 most_likely=np.argmax(np.array(probability_table[1])[:,1])
 		if final_run==True:
-			return [probability_table[0],np.array(probability_table[1])[most_likely,0],raw_probs[most_likely],float('NaN'),len(raw_probs)]
+			return [probability_table[0],np.array(probability_table[1])[most_likely,0],pos_prob[most_likely],flux_probs[most_likely],raw_probs[most_likely],float('NaN'),len(raw_probs)]
                 elif float(np.array(probability_table[1])[most_likely,1])>=confidence_percentile:
-                        return [probability_table[0],np.array(probability_table[1])[most_likely,0],raw_probs[most_likely],float(np.array(probability_table[1])[most_likely,1]),len(raw_probs)]
+                        return [probability_table[0],np.array(probability_table[1])[most_likely,0],pos_prob[most_likely],flux_probs[most_likely],raw_probs[most_likely],float(np.array(probability_table[1])[most_likely,1]),len(raw_probs)]
                 else:
                         return False
         else:
@@ -253,7 +295,7 @@ def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catal
 
         ref_cat_uuid=[]
         tar_cat_uuid=[]
-        cross_matched_table=Table(names=('tar_ra', 'tar_dec','tar_a','tar_b','tar_pa', 'tar_flux','ref_ra', 'ref_dec','ref_a','ref_b','ref_pa','ref_flux','tar_uuid','ref_name','raw_prob','norm_prob','num_of_candidates'),dtype=('f8','f8','f8','f8','f8','f8','f8','f8','f8','f8','f8','f8','U36','U14','f8','f8','i4'))
+        cross_matched_table=Table(names=('tar_ra', 'tar_dec','tar_a','tar_b','tar_pa', 'tar_flux','ref_ra', 'ref_dec','ref_a','ref_b','ref_pa','ref_flux','tar_uuid','ref_name','pos_prob','flux_prob','raw_prob','norm_prob','num_of_candidates'),dtype=('f8','f8','f8','f8','f8','f8','f8','f8','f8','f8','f8','f8','U36','U14','f8','f8','f8','f8','i4'))
         gross_matched_idx_ref, gross_matched_idx_tar, gross_matched_sep, dum=tar_cat.search_around_sky(ref_cat,limiting_res)
         if snr_restriction!=False:
             tar_cat_matched_within_resolution=original_dist_tar_catalogue[snr_filter][gross_matched_idx_tar]
@@ -274,12 +316,21 @@ def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catal
                                 ref_uuid=match[1]
                                 target_entry=original_dist_tar_catalogue[np.where(original_dist_tar_catalogue['uuid']==tar_uuid)]
                                 reference_entry_idx=np.where(ref_catalogue['uuid']==ref_uuid)
-                                cross_matched_table.add_row((target_entry['ra'],target_entry['dec'],target_entry['a'],target_entry['b'],target_entry['pa'],target_entry['peak_flux'],ref_catalogue['ra'][reference_entry_idx],ref_catalogue['dec'][reference_entry_idx],ref_catalogue['a'][reference_entry_idx],ref_catalogue['b'][reference_entry_idx],ref_catalogue['pa'][reference_entry_idx],ref_catalogue['peak_flux'][reference_entry_idx],target_entry['uuid'],ref_catalogue['uuid'][reference_entry_idx],match[2],match[3],match[4]))
+                                cross_matched_table.add_row((target_entry['ra'],target_entry['dec'],target_entry['a'],target_entry['b'],target_entry['pa'],target_entry['peak_flux'],ref_catalogue['ra'][reference_entry_idx],ref_catalogue['dec'][reference_entry_idx],ref_catalogue['a'][reference_entry_idx],ref_catalogue['b'][reference_entry_idx],ref_catalogue['pa'][reference_entry_idx],ref_catalogue['peak_flux'][reference_entry_idx],target_entry['uuid'],ref_catalogue['uuid'][reference_entry_idx],match[2],match[3],match[4],match[5],match[6]))
                                 ref_cat_uuid.append(ref_uuid)
                                 tar_cat_uuid.append(tar_uuid)
                                 
-        ref_cat_uuid=np.array(ref_cat_uuid)
+	rejected_match_idx=[]
+	for i in range(0,len(tar_cat_uuid)):
+		if reject_outliers(cross_matched_table, tar_uuid[i])=='reject':
+			print('rejected something')
+			reject_match_idx.append(i)
+	
+	cross_matched_table.remove_rows(rejected_match_idx)
+		
         tar_cat_uuid=np.array(tar_cat_uuid)
+	tar_cat_uuid=tar_cat_uuid[np.delete(np.arange(0,len(tar_cat_uuid)),rejected_match_idx)]
+	
 
         #remove the correctly cross matched sources from the modelled position target catalogue and original position target catalogue
         new_tar_index_list=np.delete(np.arange(0,len(pre_snr_tar_catalogue)),np.arange(0,len(pre_snr_tar_catalogue))[np.isin(pre_snr_tar_catalogue['uuid'],tar_cat_uuid)])
