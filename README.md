@@ -133,7 +133,7 @@ The first step taken by BELLAMY is to gauge how well the fluxes match between th
 
 Then, the adjusted target catalogue and reference catalogued are passed to a cross matching function, which searches within a 10' radius of a target source to find any possible matching refernce sources. Then using the difference in position and flux between the target source and each possible reference match, each match is assigned a value (between 0 and 1) to determine how 'likely' it is to be correct. The likelihood is calculated from a Gaussian distribution like so:
 
-![Screenshot](test.png)
+![screenshot_2019-02-13 icrar summer project](https://user-images.githubusercontent.com/38412724/52688347-132d2580-2f91-11e9-81e8-c128f06e7cad.png)
 
 Target sources with only one possible match will be accepted as good matches if their raw likelihood meets the 'singlepercentile' threshold. For target sources with multiple possible matches, a normalised likelihood will be calculated (so that all likelihoods add up to 1) and the most likely reference source will be accepted as a good match if the normalised likelihood meets the 'multipercentile' threshold. Target sources with accepted matches are removed from the target list left to be matched. Target sources with no accepted matches, remain in the target list left to be matched. 
 
