@@ -135,6 +135,10 @@ Then, the adjusted target catalogue and reference catalogued are passed to a cro
 
 ![screenshot_2019-02-13 icrar summer project](https://user-images.githubusercontent.com/38412724/52688347-132d2580-2f91-11e9-81e8-c128f06e7cad.png)
 
+The uncertainties used in these likelihood calculations are calculates like so:
+
+![screenshot_2019-02-13 icrar summer project 1](https://user-images.githubusercontent.com/38412724/52688693-6f447980-2f92-11e9-88fc-7867fd32d5b1.png)
+
 Target sources with only one possible match will be accepted as good matches if their raw likelihood meets the 'singlepercentile' threshold. For target sources with multiple possible matches, a normalised likelihood will be calculated (so that all likelihoods add up to 1) and the most likely reference source will be accepted as a good match if the normalised likelihood meets the 'multipercentile' threshold. Target sources with accepted matches are removed from the target list left to be matched. Target sources with no accepted matches, remain in the target list left to be matched. 
 
 Accepted matches are then used to model the offsets of the target and reference sources. A Rbf model is used, which is then applied to the remaining target sources. The measured offsets and the model based on these, can then be plotted and output. 
