@@ -147,7 +147,7 @@ def reject_outliers(cross_matched_table,source_uuid):
 	matched_sep=np.sqrt(matched_offset_ra**2+matched_offset_dec**2)
 	matched_angle=np.degrees(np.arctan2(matched_offset_dec,matched_offset_ra))
 	
-	allowed_pos_error=matched_sep*np.sqrt(-0.5/np.log(entry_of_interest['pos_prob']))
+	allowed_pos_error=np.sqrt(entry_of_interest['tar_err_ra']**2+entry_of_interest['tar_err_dec']**2+entry_of_interest['ref_err_ra']**2+entry_of_interest['ref_err_dec']**2)
 	
 	d_ra=table_copy['tar_ra']-table_copy['ref_ra']
 	d_dec=table_copy['tar_dec']-table_copy['ref_dec']
@@ -160,13 +160,13 @@ def reject_outliers(cross_matched_table,source_uuid):
 	predicted_sep=np.sqrt(predicted_offset_ra**2+predicted_offset_dec**2)
 	predicted_angle=np.degrees(np.arctan2(predicted_offset_dec,predicted_offset_ra))
 	
-	print('')
-	print('')
-	print('RA: ',float(entry_of_interest['tar_ra']), 'DEC: ' ,float(entry_of_interest['tar_dec']))
-	print('Allowed position error :', float(allowed_pos_error))
+	#print('')
+	#print('')
+	#print('RA: ',float(entry_of_interest['tar_ra']), 'DEC: ' ,float(entry_of_interest['tar_dec']))
+	#print('Allowed position error :', float(allowed_pos_error))
 	
 	
-	print(Table([['offset_ra','offset_dec','sep','angle'],[matched_offset_ra,matched_offset_dec,matched_sep,matched_angle],['offset_ra','offset_dec','sep','angle'],[predicted_offset_ra,predicted_offset_dec,predicted_sep,predicted_angle]],names=('matched','','predicted','')))
+	#print(Table([['offset_ra','offset_dec','sep','angle'],[matched_offset_ra,matched_offset_dec,matched_sep,matched_angle],['offset_ra','offset_dec','sep','angle'],[predicted_offset_ra,predicted_offset_dec,predicted_sep,predicted_angle]],names=('matched','','predicted','')))
 	
 	if np.abs(matched_angle-predicted_angle)>45. and predicted_sep<matched_sep:
 		return 'reject'
