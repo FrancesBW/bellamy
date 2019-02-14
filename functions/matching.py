@@ -160,14 +160,6 @@ def reject_outliers(cross_matched_table,source_uuid):
 	predicted_sep=np.sqrt(predicted_offset_ra**2+predicted_offset_dec**2)
 	predicted_angle=np.degrees(np.arctan2(predicted_offset_dec,predicted_offset_ra))
 	
-	#print('')
-	#print('')
-	#print('RA: ',float(entry_of_interest['tar_ra']), 'DEC: ' ,float(entry_of_interest['tar_dec']))
-	#print('Allowed position error :', float(allowed_pos_error))
-	
-	
-	#print(Table([['offset_ra','offset_dec','sep','angle'],[matched_offset_ra,matched_offset_dec,matched_sep,matched_angle],['offset_ra','offset_dec','sep','angle'],[predicted_offset_ra,predicted_offset_dec,predicted_sep,predicted_angle]],names=('matched','','predicted','')))
-	
 	if np.abs(matched_angle-predicted_angle)>45. and predicted_sep<matched_sep:
 		return 'reject'
 	elif matched_sep>predicted_sep+allowed_pos_error:
@@ -353,17 +345,11 @@ def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catal
 				rejected_entry=copy(cross_matched_table[rejected_entry_idx])
 				
 				try:
-					#print(rejected_catalogue)
-					#print(type(rejected_catalogue))
-					#print(rejected_entry)
-					#print(type(rejected_entry))
 					rejected_catalogue.add_row(rejected_entry)
 				except (NameError,TypeError):
-					#print(rejected_entry)
-					p#rint(type(rejected_entry))
 					rejected_catalogue=Table(rejected_entry)
 				cross_matched_table.remove_row(np.where(cross_matched_table['tar_uuid']==tar_cat_uuid[i])[0][0])
-	if final_run=False:
+	if final_run==False:
 		if options.plotting==True:
 			if already_cross_matched!=None:
 				plot_rejections(vstack([already_cross_matched,cross_matched_table]), rejected_catalogue,run,options)
