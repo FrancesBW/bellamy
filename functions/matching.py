@@ -364,7 +364,10 @@ def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catal
 					rejected_catalogue=Table(rejected_entry)
 				cross_matched_table.remove_row(np.where(cross_matched_table['tar_uuid']==tar_cat_uuid[i])[0][0])
 	if options.plotting==True:
-		plot_rejections(cross_matched_table, rejected_catalogue,run,options)
+		if already_cross_matched!=None:
+			plot_rejections(vstack([already_cross_matched,cross_matched_table]), rejected_catalogue,run,options)
+		else:
+			plot_rejections(cross_matched_table, rejected_catalogue,run,options)
 	
         tar_cat_uuid=np.array(tar_cat_uuid)
 	tar_cat_uuid=tar_cat_uuid[np.delete(np.arange(0,len(tar_cat_uuid)),rejected_match_idx)]
