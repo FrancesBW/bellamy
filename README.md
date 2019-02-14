@@ -13,6 +13,8 @@ The Python 2.7 version requires the following packages:
 * argparse
 * matplotlib
 
+Note: Python 2.7 will become deprecated in late 2019/early 2020 so upgrade to Python 3.6 or greater before this time would be the goal.
+
 ## Installation:
 
 To install BELLAMY you can use one of the following methods:
@@ -43,11 +45,11 @@ Currently supported catalogues are:
 
 ### Required Inputs:
 
-* ```--target TARGET_FILENAME```
+* ```--target TARGET_FILENAME``` filename/path for the target catalogue.
 
-* ```--reference REFERENCE_FILENAME```
+* ```--reference REFERENCE_FILENAME``` filename/path for the reference catalogue.
 
-* ```--refsurvey REFERENCE_SURVEY_NAME```
+* ```--refsurvey REFERENCE_SURVEY_NAME``` provide the format file for the target catalogue (see Formats section for guide). If target catalogue is a supported catalogue, provide survey name.
 
 ### Settings:
 
@@ -81,7 +83,9 @@ Currently supported catalogues are:
 
 * ```--tarformat FORMAT_FILENAME``` provide the format file for the target catalogue (see Formats section for guide). Default is detailed in Formats section.
 
-* ```--filesuffix SUFFIX``` provide desired suffix to be appended for all output files (except log). Note a '\_' will be added between default filename and suffix, so there is no need to include this in the suffix. Default is None.
+* ```--filesuffix SUFFIX``` provide desired suffix to be appended for all output files (except the log file). Note a '\_' will be added between default filename and suffix, so there is no need to include this in the suffix. Default is None.
+
+* ```--tarres TAR_RES``` provide a single value for the image resolution of the target catalogue 
 
 
 ## Formats:
@@ -151,7 +155,7 @@ The algorithm will output 4 tables of the specified file format (fits by default
 
 * 'leftover_reference_catalogue': contains the data for the reference sources that weren't matched or deemed the most likely to match a target source.
 
-* 'leftover_target_catalogue': *possibly deprecated*
+* 'leftover_target_catalogue': contains the data for the target sources that were unable to be matched, with their positions altered in accordance with the Rbf offset model.
 
-* 'leftover_unwarped_target_catalogue': *possibly deprecated*
+* 'leftover_unwarped_target_catalogue': contains the data for the target sources that were unable to be matched, with their original positions.
 
