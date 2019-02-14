@@ -333,7 +333,7 @@ def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catal
 				entry.add_columns([Column([match[2]],name='pos_prob'),Column([match[3]],name='flux_prob'),Column([match[4]],name='total_prob'),Column([match[5]],name='norm_prob'),Column([match[6]],name='num_of_candidates')])
 				try:
                                 	cross_matched_table=vstack([cross_matched_table,entry])
-				except NameError:
+				except (NameError,TypeError):
 					cross_matched_table=entry
 				ref_cat_uuid.append(ref_uuid)
                                 tar_cat_uuid.append(tar_uuid)
@@ -357,7 +357,7 @@ def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catal
 				#print(type(rejected_entry))
 				try:
 					rejected_catalogue=vstack(rejected_catalogue, rejected_entry)
-				except (NameError,ValueError):
+				except (NameError,TypeError):
 					rejected_catalogue=rejected_entry
 				cross_matched_table.remove_row(np.where(cross_matched_table['tar_uuid']==tar_cat_uuid[i])[0][0])
 	if options.plotting==True:
