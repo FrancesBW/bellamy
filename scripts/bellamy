@@ -275,20 +275,16 @@ if __name__=='__main__':
         
         #We're now going to read in the catalogs, and check that the supplied column names exist in the table
         #Currently only fits and vot support, but will aim to have support for other formats in future revisions
-        if reference_cat_filename.split('.')[-1]=='fits':
-                raw_reference_table=np.squeeze(fits.open(reference_cat_filename)[1].data)
-        elif reference_cat_filename.split('.')[-1]=='vot':
-                raw_reference_table=parse_single_table(reference_cat_filename).array
-        else:
-                log.error("Unsupported file format {0}. Please use fits or vot files".format(reference_cat_filename.split('.')[-1]))
+        try: 
+                raw_reference_table=Table.read(reference_cat_filename)
+        except:
+                log.error("Unsupported file format {0}. Please see documentation for link to supported files".format(reference_cat_filename.split('.')[-1]))
                 sys.exit(1)
         
-        if target_cat_filename.split('.')[-1]=='fits':
-                raw_target_table=np.squeeze(fits.open(target_cat_filename)[1].data)
-        elif target_cat_filename.split('.')[-1]=='vot':
-                raw_target_table=parse_single_table(target_cat_filename).array
-        else:
-                log.error("Unsupported file format {0}. Please use fits or vot files".format(target_cat_filename.split('.')[-1]))
+        try:
+                raw_target_table=Table.read(target_cat_filename)
+        except:
+                log.error("Unsupported file format {0}. Please see documentation for link to supported files".format(target_cat_filename.split('.')[-1]))
                 sys.exit(1)
         
         target_table_length=len(raw_target_table)
@@ -308,6 +304,7 @@ if __name__=='__main__':
         tar_psf_a_data=check_column_exists(tar_values[4],raw_target_table,vars_g,optional=True,length=target_table_length,variable='target psf a')
 	if np.sum(tar_psf_a_data)==0 and options.tar_res!=None:
 		tar_psf_a_data=np.ones(target_table_length)*options.tar_res
+		log.info("No resolution data located in catalogue, setting resolution at {0} arcseconds across entire target catalogue".format(options.tar_res))
         tar_psf_b_data=check_column_exists(tar_values[5],raw_target_table,vars_g,optional=True,length=target_table_length,variable='target psf b')
         if np.sum(tar_psf_b_data)==0 and options.tar_res!=None:
 		tar_psf_b_data=np.ones(target_table_length)*options.tar_res
@@ -342,6 +339,7 @@ if __name__=='__main__':
 		else:
 			ref_psf_a_data=np.ones(reference_table_length)*options.ref_res
 			ref_psf_b_data=np.ones(reference_table_length)*options.ref_res
+			log.info("No resolution data located in catalogue, setting resolution at {0} arcseconds across entire reference catalogue".format(options.ref_res))
         else:
                 ref_psf_a_data=check_column_exists(ref_values[4],raw_reference_table,vars_g,optional=True,length=reference_table_length,variable='reference psf a')
                 ref_psf_b_data=check_column_exists(ref_values[5],raw_reference_table,vars_g,optional=True,length=reference_table_length,variable='reference psf b')
