@@ -357,7 +357,7 @@ def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catal
 				print(type(rejected_entry))
 				try:
 					rejected_catalogue=vstack(rejected_catalogue, rejected_entry)
-				except NameError:
+				except (NameError,ValueError):
 					rejected_catalogue=rejected_entry
 				cross_matched_table.remove_row(np.where(cross_matched_table['tar_uuid']==tar_cat_uuid[i])[0][0])
 	if options.plotting==True:
@@ -393,7 +393,7 @@ def plot_rejections(accepted, rejected,run_num,options):
 	ax.set_xlabel("Distance from pointing centre / degrees")
 	ax.set_ylabel("Distance from pointing centre / degrees")
 	ax.set_title("Source position offsets / arcsec")
-	plt.savefig("Measured_offsets" +"_run_"+str(run_num)+options.save_file_suffix+".png")
+	plt.savefig("Accepted_and_rejected_matches_run_"+str(run_num)+options.save_file_suffix+".png")
 
 def flux_model(raw_tar_catalogue,filtered_ref_catalogue,options):
         """
