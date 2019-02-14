@@ -351,10 +351,10 @@ def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catal
 				rejected_match_idx.append(i)
 				rejected_entry_idx=np.where(cross_matched_table['tar_uuid']==tar_cat_uuid[i])[0][0]
 				rejected_entry=copy(cross_matched_table[rejected_entry_idx])
-				#print(rejected_catalogue)
-				#print(type(rejected_catalogue))
-				#print(rejected_entry)
-				#print(type(rejected_entry))
+				print(rejected_catalogue)
+				print(type(rejected_catalogue))
+				print(rejected_entry)
+				print(type(rejected_entry))
 				try:
 					rejected_catalogue=vstack(rejected_catalogue, rejected_entry)
 				except (NameError,TypeError):
