@@ -381,6 +381,16 @@ def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catal
         return cross_matched_table, ref_catalogue, new_tar_catalogue, new_original_dist_tar_catalogue
 
 def plot_rejections(accepted, rejected,run_num,options):
+	"""
+        Take the updated reference and target catalogues to perform a cross match within a resolution radius. Allows user to define a restriction on the SNR threshold of source, how tightly the fluxes should match and a normalisation factor for fluxes between the two catalogues.
+        
+        :param accepted: the catalogue of accepted matches
+        :param rejected: the catalogue of rejected matches
+        :param run_num: integer describing which run it is
+        :param options: run settings
+	
+        :return: plot of the accepted matches in blue and the rejected ones in red
+        """
 	accepted_offset_ra=accepted['tar_ra']-accepted['ref_ra']
 	accepted_offset_dec=accepted['tar_dec']-accepted['ref_dec']
 	accepted_angles = np.degrees(np.arctan2(accepted_offset_dec,accepted_offset_ra))
@@ -394,11 +404,12 @@ def plot_rejections(accepted, rejected,run_num,options):
 	gs = gridspec.GridSpec(100,100)
 	gs.update(hspace=0,wspace=0)
 	ax = fig.add_subplot(gs[0:100,0:100])
-	cax1 = ax.quiver(accepted['tar_ra'],accepted['tar_dec'], accepted_offset_ra, accepted_offset_dec,color='g',width=0.008)
-	cax2 = ax.quiver(rejected['tar_ra'],rejected['tar_dec'], rejected_offset_ra, rejected_offset_dec,color='r',width=0.008)
+	cax1 = ax.quiver(accepted['tar_ra'],accepted['tar_dec'], accepted_offset_ra, accepted_offset_dec,color='dodgerblue',width=0.003)
+	cax2 = ax.quiver(rejected['tar_ra'],rejected['tar_dec'], rejected_offset_ra, rejected_offset_dec,color='r',width=0.003)
 	ax.set_xlabel("Distance from pointing centre / degrees")
 	ax.set_ylabel("Distance from pointing centre / degrees")
 	ax.set_title("Source position offsets / arcsec")
+	plt.legend(loc=0,fontsize=12)
 	plt.savefig("Accepted_and_rejected_matches_run_"+str(run_num)+options.save_file_suffix+".png")
 
 def flux_model(raw_tar_catalogue,filtered_ref_catalogue,options):
