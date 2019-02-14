@@ -271,7 +271,7 @@ def prob_comb(ref_candidates, tar_entry, confidence_percentile,single_candidate_
                         return False
                         
 
-def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catalogue, confidence_percentile, single_candidate_confidence, log, already_cross_matched=None,snr_restriction=False, flux_match=True,final_run=False):
+def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catalogue, confidence_percentile, single_candidate_confidence, log,options, run, already_cross_matched=None,snr_restriction=False, flux_match=True,final_run=False):
         """
         Take the updated reference and target catalogues to perform a cross match within a resolution radius. Allows user to define a restriction on the SNR threshold of source, how tightly the fluxes should match and a normalisation factor for fluxes between the two catalogues.
         
@@ -344,16 +344,21 @@ def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catal
 	if len(cross_matched_table)>0 and final_run==False:
 		for i in range(0,len(tar_cat_uuid)):
 			if already_cross_matched!=None:
-				if reject_outliers(vstack([already_cross_matched,cross_matched_table]), tar_cat_uuid[i])=='reject':
-					print('rejected something')
-					rejected_match_idx.append(i)
-					cross_matched_table.remove_row(np.where(cross_matched_table['tar_uuid']==tar_cat_uuid[i])[0][0])
+				passed_catalogue=vstack([already_cross_matched,cross_matched_table])
 			else:
-				if reject_outliers(cross_matched_table, tar_cat_uuid[i])=='reject':
-					print('rejected something')
-					rejected_match_idx.append(i)
-					cross_matched_table.remove_row(np.where(cross_matched_table['tar_uuid']==tar_cat_uuid[i])[0][0])
-		
+				passed_catalogue=cross_matched_table
+			if reject_outliers(passed_catalogue, tar_cat_uuid[i])=='reject':
+				rejected_match_idx.append(i)
+				rejected_entry_idx=np.where(cross_matched_table['tar_uuid']==tar_cat_uuid[i])[0][0]
+				rejected_entry=copy(cross_matched_table[rejected_entry_idx])
+				try:
+					rejected_catalogue=vstack(rejected_catalogue, rejected_entry)
+				except NameError:
+					rejected_catalogue=rejected_entry
+				cross_matched_table.remove_row(np.where(cross_matched_table['tar_uuid']==tar_cat_uuid[i])[0][0])
+	if options.plotting==True:
+		plot_rejections(cross_matched_table, rejected_catalogue,run,options)
+	
         tar_cat_uuid=np.array(tar_cat_uuid)
 	tar_cat_uuid=tar_cat_uuid[np.delete(np.arange(0,len(tar_cat_uuid)),rejected_match_idx)]
 	
@@ -364,6 +369,27 @@ def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catal
         new_original_dist_tar_catalogue=original_dist_tar_catalogue[new_tar_index_list]
         
         return cross_matched_table, ref_catalogue, new_tar_catalogue, new_original_dist_tar_catalogue
+
+def plot_rejections(accepted, rejected,run_num,options):
+	accepted_offset_ra=accepted['tar_ra']-accepted['ref_ra']
+	accepted_offset_dec=accepted['tar_dec']-accepted['ref_dec']
+	accepted_angles = np.degrees(np.arctan2(accepted_offset_dec,accepted_offset_ra))
+
+	rejected_offset_ra=rejected['tar_ra']-rejected['ref_ra']
+	rejected_offset_dec=rejected['tar_dec']-rejected['ref_dec']
+	rejected_angles = np.degrees(np.arctan2(rejected_offset_dec,rejected_offset_ra))
+	
+	plt.rcParams['axes.facecolor'] = 'white'
+	fig = plt.figure(figsize=(12, 12))
+	gs = gridspec.GridSpec(100,100)
+	gs.update(hspace=0,wspace=0)
+	ax = fig.add_subplot(gs[0:100,0:100])
+	cax1 = ax.quiver(accepted['tar_ra'],accepted['tar_dec'], accepted_offset_ra, accepted_offset_dec,color='g',width=0.008)
+	cax2 = ax.quiver(rejected['tar_ra'],rejected['tar_dec'], rejected_offset_ra, rejected_offset_dec,color='r',width=0.008)
+	ax.set_xlabel("Distance from pointing centre / degrees")
+	ax.set_ylabel("Distance from pointing centre / degrees")
+	ax.set_title("Source position offsets / arcsec")
+	plt.savefig("Measured_offsets" +"_run_"+str(run_num)+options.save_file_suffix+".png")
 
 def flux_model(raw_tar_catalogue,filtered_ref_catalogue,options):
         """
@@ -435,7 +461,7 @@ def run(raw_target_table, raw_reference_table, snr_restrict,log,options):
 
         #run initial cross match
         log.info('Run 1')
-        cross_match_table,updated_ref_cat,updated_tar_cat,updated_tar_cat_orig_dist=cross_matching(filtered_GLEAM, raw_target_table, raw_target_table, options.multiple_match_percentile, options.single_match_percentile, log, snr_restriction=snr_restrict,flux_match=options.flux_match)
+        cross_match_table,updated_ref_cat,updated_tar_cat,updated_tar_cat_orig_dist=cross_matching(filtered_GLEAM, raw_target_table, raw_target_table, options.multiple_match_percentile, options.single_match_percentile, log, options, 1, snr_restriction=snr_restrict,flux_match=options.flux_match)
 
         #modelling will fail if we have less than 2 points, so raise an error before scipy does
         if len(cross_match_table)<2:
@@ -453,12 +479,12 @@ def run(raw_target_table, raw_reference_table, snr_restrict,log,options):
                 log.info("Number of cross matches so far: {0}".format(len(cross_match_table)))
                 start_of_run_cross_match_num=len(cross_match_table)
                 adjusted_tar_cat=model_offsets_and_update_positions(cross_match_table,updated_tar_cat_orig_dist,count,options)
-                additional_cross_matches,updated_ref_cat,updated_tar_cat,updated_tar_cat_orig_dist=cross_matching(updated_ref_cat,adjusted_tar_cat, updated_tar_cat_orig_dist, options.multiple_match_percentile, options.single_match_percentile, log, already_cross_matched=cross_match_table,flux_match=options.flux_match)
+                additional_cross_matches,updated_ref_cat,updated_tar_cat,updated_tar_cat_orig_dist=cross_matching(updated_ref_cat,adjusted_tar_cat, updated_tar_cat_orig_dist, options.multiple_match_percentile, options.single_match_percentile, log, options, count,already_cross_matched=cross_match_table,flux_match=options.flux_match)
                 #add the new cross matches to the total table
                 cross_match_table=vstack([cross_match_table,additional_cross_matches])
 		end_of_run_cross_match_num=len(cross_match_table)
                 if end_of_run_cross_match_num==start_of_run_cross_match_num:
-                        less_certain_cross_matches,updated_ref_cat,updated_tar_cat,updated_tar_cat_orig_dist=cross_matching(updated_ref_cat,adjusted_tar_cat, updated_tar_cat_orig_dist, options.multiple_match_percentile, options.single_match_percentile, log, flux_match=options.flux_match,final_run=True)
+                        less_certain_cross_matches,updated_ref_cat,updated_tar_cat,updated_tar_cat_orig_dist=cross_matching(updated_ref_cat,adjusted_tar_cat, updated_tar_cat_orig_dist, options.multiple_match_percentile, options.single_match_percentile, log, options, count,flux_match=options.flux_match,final_run=True)
                         #add the new cross matches to the total table
                         cross_match_table=vstack([cross_match_table,less_certain_cross_matches])
                         improved=False
