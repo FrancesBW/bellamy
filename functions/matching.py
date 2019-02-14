@@ -353,11 +353,11 @@ def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catal
 				rejected_entry=copy(cross_matched_table[rejected_entry_idx])
 				
 				try:
-					print(rejected_catalogue)
-					print(type(rejected_catalogue))
-					print(rejected_entry)
-					print(type(rejected_entry))
-					rejected_catalogue=vstack(rejected_catalogue, rejected_entry)
+					#print(rejected_catalogue)
+					#print(type(rejected_catalogue))
+					#print(rejected_entry)
+					#print(type(rejected_entry))
+					rejected_catalogue.add_row(rejected_entry)
 				except (NameError,TypeError):
 					print(rejected_entry)
 					print(type(rejected_entry))
