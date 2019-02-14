@@ -335,9 +335,9 @@ def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catal
 	rejected_match_idx=[]
 	if len(cross_matched_table)>0 and final_run==False:
 		for i in range(0,len(tar_cat_uuid)):
-			if already_cross_matched!=None:
+			try:
 				passed_catalogue=vstack([already_cross_matched,cross_matched_table])
-			else:
+			except TypeError:
 				passed_catalogue=cross_matched_table
 			if reject_outliers(passed_catalogue, tar_cat_uuid[i])=='reject':
 				rejected_match_idx.append(i)
