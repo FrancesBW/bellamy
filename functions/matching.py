@@ -9,7 +9,7 @@ from astropy import wcs
 from astropy.io import fits
 from astropy.io.votable import parse_single_table
 from astropy.coordinates import SkyCoord, Angle, Latitude, Longitude, SkyOffsetFrame
-from astropy.table import Table, hstack, join, vstack
+from astropy.table import Table, hstack, join, vstack, Column
 import astropy.units as u
 import sys
 import glob
