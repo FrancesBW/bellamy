@@ -77,12 +77,12 @@ def model_offsets_and_update_positions(cross_matched_catalogue,target_catalogue,
         """
 	
         #calculating the offsets from the cross matched catalogue
-        d_ra=cross_matched_catalogue[tar_ra_column]-cross_matched_catalogue[ref_ra_column]
-	d_dec=cross_matched_catalogue[tar_dec_column]-cross_matched_catalogue[ref_dec_column]
+        d_ra=cross_matched_catalogue['tar_ra']-cross_matched_catalogue['ref_ra']
+	d_dec=cross_matched_catalogue['tar_dec']-cross_matched_catalogue['ref_dec']
         
         #creating a model of the measured offsets as a function of the position in the sky using rbf interpolation
-	model_d_ra=interpolate.Rbf(cross_matched_catalogue[tar_ra_column], cross_matched_catalogue[tar_dec_column], d_ra, function='linear',smooth=0.032777778)
-	model_d_dec=interpolate.Rbf(cross_matched_catalogue[tar_ra_column], cross_matched_catalogue[tar_dec_column], d_dec, function='linear',smooth=0.032777778)
+	model_d_ra=interpolate.Rbf(cross_matched_catalogue['tar_ra'], cross_matched_catalogue['tar_dec'], d_ra, function='linear',smooth=0.032777778)
+	model_d_dec=interpolate.Rbf(cross_matched_catalogue['tar_ra'], cross_matched_catalogue['tar_dec'], d_dec, function='linear',smooth=0.032777778)
         
         #need to create a copy of the target catalogue to avoid overwriting the original positions at this point
         target_catalogue_copy=copy(target_catalogue)
@@ -92,8 +92,8 @@ def model_offsets_and_update_positions(cross_matched_catalogue,target_catalogue,
         target_catalogue_copy['dec']=target_catalogue_copy['dec']-model_d_dec(target_catalogue_copy['ra'], target_catalogue_copy['dec'])
         #print(Table([target_catalogue['ra'],target_catalogue['dec'],target_catalogue['uuid']],names=('tar_ra','tar_dec','uuid')))
 
-        modelled_offset_ra=d_ra-model_d_ra(cross_matched_catalogue[tar_ra_column],cross_matched_catalogue[tar_dec_column])
-        modelled_offset_dec=d_dec-model_d_dec(cross_matched_catalogue[tar_ra_column], cross_matched_catalogue[tar_dec_column])
+        modelled_offset_ra=d_ra-model_d_ra(cross_matched_catalogue['tar_ra'],cross_matched_catalogue['tar_dec'])
+        modelled_offset_dec=d_dec-model_d_dec(cross_matched_catalogue['tar_ra'], cross_matched_catalogue['tar_dec'])
         #print(d_ra)
         #print(model_d_ra(cross_matched_catalogue[tar_ra_column],cross_matched_catalogue[tar_dec_column]))        
         if options.plotting==True:
@@ -103,7 +103,7 @@ def model_offsets_and_update_positions(cross_matched_catalogue,target_catalogue,
                 gs.update(hspace=0,wspace=0)
                 ax = fig.add_subplot(gs[0:100,0:100])
                 angles = np.degrees(np.arctan2(d_dec, d_ra))
-                cax = ax.quiver(cross_matched_catalogue[tar_ra_column], cross_matched_catalogue[tar_dec_column], d_ra, d_dec,angles,cmap=plt.cm.get_cmap('rainbow'))
+                cax = ax.quiver(cross_matched_catalogue['tar_ra'], cross_matched_catalogue['tar_dec'], d_ra, d_dec,angles,cmap=plt.cm.get_cmap('rainbow'))
                 ax.set_xlabel("Distance from pointing centre / degrees")
                 ax.set_ylabel("Distance from pointing centre / degrees")
                 ax.set_title("Source position offsets / arcsec")
@@ -307,9 +307,7 @@ def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catal
 
         ref_cat_uuid=[]
         tar_cat_uuid=[]
-        cross_matched_table=Table(names=('tar_ra', 'tar_dec','tar_a','tar_b','tar_pa', 'tar_flux','ref_ra', 'ref_dec','ref_a','ref_b','ref_pa','ref_flux','tar_uuid','ref_name','pos_prob','flux_prob','raw_prob','norm_prob','num_of_candidates'),dtype=('f8','f8','f8','f8','f8','f8','f8','f8','f8','f8','f8','f8','U36','U14','f8','f8','f8','f8','i4'))
-        if already_cross_matched==None:
-		already_cross_matched=copy(cross_matched_table)
+        
 	gross_matched_idx_ref, gross_matched_idx_tar, gross_matched_sep, dum=tar_cat.search_around_sky(ref_cat,limiting_res)
         if snr_restriction!=False:
             tar_cat_matched_within_resolution=original_dist_tar_catalogue[snr_filter][gross_matched_idx_tar]
@@ -328,16 +326,20 @@ def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catal
                         if match!=False:
                                 tar_uuid=match[0]
                                 ref_uuid=match[1]
-                                target_entry=original_dist_tar_catalogue[np.where(original_dist_tar_catalogue['uuid']==tar_uuid)]
+				target_entry_idx=np.where(original_dist_tar_catalogue['uuid']==tar_uuid)
+                                target_entry=original_dist_tar_catalogue[target_entry_idx]
                                 reference_entry_idx=np.where(ref_catalogue['uuid']==ref_uuid)
-                                cross_matched_table.add_row((target_entry['ra'],target_entry['dec'],target_entry['a'],target_entry['b'],target_entry['pa'],target_entry['peak_flux'],ref_catalogue['ra'][reference_entry_idx],ref_catalogue['dec'][reference_entry_idx],ref_catalogue['a'][reference_entry_idx],ref_catalogue['b'][reference_entry_idx],ref_catalogue['pa'][reference_entry_idx],ref_catalogue['peak_flux'][reference_entry_idx],target_entry['uuid'],ref_catalogue['uuid'][reference_entry_idx],match[2],match[3],match[4],match[5],match[6]))
-                                ref_cat_uuid.append(ref_uuid)
+				entry=hstack([original_dist_tar_catalogue[target_entry_idx],ref_catalogue[reference_entry_idx]],table_names=['tar','ref'],uniq_col_name='{table_name}_{col_name}')
+				entry.add_columns([Column([match[2]],name='pos_prob'),Column([match[3]],name='flux_prob'),Column([match[4]],name='total_prob'),Column([match[5]],name='norm_prob'),Column([match[6]],name='num_of_candidates')])
+				try:
+                                	cross_matched_table=vstack([cross_matched_table,entry])
+				except NameError:
+					cross_matched_table=entry
+				ref_cat_uuid.append(ref_uuid)
                                 tar_cat_uuid.append(tar_uuid)
 				
-	copt=copy(tar_cat_uuid)                     
 	random.shuffle(tar_cat_uuid)	
 	
-	print('Are they still there?' ,np.all(np.isin(copt,tar_cat_uuid)))
 	rejected_match_idx=[]
 	if len(cross_matched_table)>0 and final_run==False:
 		for i in range(0,len(tar_cat_uuid)):
