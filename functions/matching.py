@@ -332,9 +332,9 @@ def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catal
 				entry=hstack([original_dist_tar_catalogue[target_entry_idx],ref_catalogue[reference_entry_idx]],table_names=['tar','ref'],uniq_col_name='{table_name}_{col_name}')
 				entry.add_columns([Column([match[2]],name='pos_prob'),Column([match[3]],name='flux_prob'),Column([match[4]],name='total_prob'),Column([match[5]],name='norm_prob'),Column([match[6]],name='num_of_candidates')])
 				try:
-                                	cross_matched_table=vstack([cross_matched_table,entry])
+                                	cross_matched_table.add_row(entry)
 				except (NameError,TypeError):
-					cross_matched_table=entry
+					cross_matched_table=Table(entry)
 				ref_cat_uuid.append(ref_uuid)
                                 tar_cat_uuid.append(tar_uuid)
 				
@@ -359,8 +359,8 @@ def cross_matching(ref_catalogue, pre_snr_tar_catalogue, original_dist_tar_catal
 					#print(type(rejected_entry))
 					rejected_catalogue.add_row(rejected_entry)
 				except (NameError,TypeError):
-					print(rejected_entry)
-					print(type(rejected_entry))
+					#print(rejected_entry)
+					p#rint(type(rejected_entry))
 					rejected_catalogue=Table(rejected_entry)
 				cross_matched_table.remove_row(np.where(cross_matched_table['tar_uuid']==tar_cat_uuid[i])[0][0])
 	if options.plotting==True:
